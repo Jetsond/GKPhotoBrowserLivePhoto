@@ -556,10 +556,13 @@
     [self.visiblePhotoViews enumerateObjectsUsingBlock:^(GKPhotoView *photoView, NSUInteger idx, BOOL * _Nonnull stop) {
         if ((photoView.frame.origin.x + photoView.frame.size.width < self.photoScrollView.contentOffset.x - self.photoScrollView.frame.size.width) || (photoView.frame.origin.x > self.photoScrollView.contentOffset.x + 2 * self.photoScrollView.frame.size.width)) {
             [photoView prepareForReuse];
+
+            ///新增修改bug 视频一直播放
+            [photoView didScrollDisappear];
             [photoView removeFromSuperview];
             GKPhoto *photo = nil;
             [photoView setupPhoto:photo];
-            
+          
             [viewsForRemove addObject:photoView];
             [self.reusablePhotoViews addObject:photoView];
         }
