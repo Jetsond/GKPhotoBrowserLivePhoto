@@ -7,18 +7,7 @@
 
 #import "GKPhotoView+LivePhoto.h"
 #import "GKPhotoBrowser.h"
-#import <Masonry/Masonry.h>
-//获取keywindow
-#define BkWindowView ({ \
-    UIWindow *keyWindow = nil; \
-    for (UIWindow *window in [UIApplication sharedApplication].windows) { \
-        if (window.isKeyWindow) { \
-            keyWindow = window; \
-            break; \
-        } \
-    } \
-    keyWindow; \
-})
+
 @interface GKLivePhotoMarkView()
 
 @property (nonatomic, strong) UIImageView *liveImgView;
@@ -196,19 +185,8 @@
     [self.imageView bringSubviewToFront:self.livePhoto.livePhotoView];
     [self.livePhoto gk_updateFrame:self.imageView.bounds];
     if (self.liveMarkView.superview) {
-//        CGFloat x = 10;
-//        CGFloat y = CGRectGetMinY(self.imageView.frame) + 10;
-//        CGFloat w = 64;
-//        CGFloat h = 20;
-//        self.liveMarkView.frame = CGRectMake(x, y, w, h);
-
-        [self.liveMarkView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.leading.mas_equalTo(16.f);
-            make.bottom.mas_equalTo(-(BkWindowView.safeAreaInsets.bottom +16.f));
-            make.size.mas_equalTo(CGSizeMake(66.f, 32.f));
-        }];
-        
-        
+        CGFloat y = CGRectGetMinY(self.imageView.frame) + 10;
+        self.liveMarkView.frame = CGRectMake(16.f, self.frame.size.height - kSafeBottomSpace-32.f-16.f, 66.f, 32.f);
         
         if (self.imageView.frame.size.height > (self.frame.size.height - kSafeTopSpace - kSafeBottomSpace)) {
             CGPoint center = self.liveMarkView.center;
