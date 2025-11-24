@@ -7,12 +7,25 @@
 
 #import "GKPhotoView+LivePhoto.h"
 #import "GKPhotoBrowser.h"
-
+#import <Masonry/Masonry.h>
+//获取keywindow
+#define BkWindowView ({ \
+    UIWindow *keyWindow = nil; \
+    for (UIWindow *window in [UIApplication sharedApplication].windows) { \
+        if (window.isKeyWindow) { \
+            keyWindow = window; \
+            break; \
+        } \
+    } \
+    keyWindow; \
+})
 @interface GKLivePhotoMarkView()
 
 @property (nonatomic, strong) UIImageView *liveImgView;
 
 @property (nonatomic, strong) UILabel *liveLabel;
+
+@property (nonatomic, strong) UIButton *tagAction;
 
 @end
 
@@ -28,13 +41,19 @@
 - (void)initUI {
     [self addSubview:self.liveImgView];
     [self addSubview:self.liveLabel];
+    [self addSubview:self.tagAction];
+    [_tagAction addTarget:self action:@selector(tagPlayLiveAction) forControlEvents:UIControlEventTouchUpInside];
 }
-
+- (void)tagPlayLiveAction {
+    if (self.playBlockAction) {
+        self.playBlockAction();
+    }
+}
 - (void)layoutSubviews {
     [super layoutSubviews];
     
     CGRect frame = self.liveImgView.frame;
-    frame.origin.x = 5;
+    frame.origin.x = 10;
     frame.origin.y = (self.frame.size.height - frame.size.height) / 2;
     self.liveImgView.frame = frame;
     
@@ -42,6 +61,10 @@
     frame.origin.x = CGRectGetMaxX(self.liveImgView.frame) + 5;
     frame.origin.y = (self.frame.size.height - frame.size.height) / 2;
     self.liveLabel.frame = frame;
+    
+    
+    self.tagAction.frame = self.bounds;
+    
 }
 
 #pragma mark - lazy
@@ -49,7 +72,6 @@
     if (!_liveImgView) {
         _liveImgView = [[UIImageView alloc] init];
         _liveImgView.image = GKPhotoBrowserImage(@"gk_photo_live");
-        _liveImgView.tintColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
         [_liveImgView sizeToFit];
     }
     return _liveImgView;
@@ -58,14 +80,20 @@
 - (UILabel *)liveLabel {
     if (!_liveLabel) {
         _liveLabel = [[UILabel alloc] init];
-        _liveLabel.font = [UIFont systemFontOfSize:14];
-        _liveLabel.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1];
-        _liveLabel.text = @"LIVE";
+        _liveLabel.font = [UIFont systemFontOfSize:12];
+        _liveLabel.textColor = UIColor.whiteColor;
+        _liveLabel.text = @"实况";
         [_liveLabel sizeToFit];
     }
     return _liveLabel;
 }
 
+- (UIButton *)tagAction {
+    if (!_tagAction) {
+        _tagAction = [UIButton buttonWithType:UIButtonTypeCustom];
+    }
+    return _tagAction;
+}
 @end
 
 @implementation GKPhotoView (LivePhoto)
@@ -78,6 +106,7 @@
     [self.liveLoadingView startLoading];
     if (self.configure.isShowLivePhotoMark) {
         [self addSubview:self.liveMarkView];
+        self.liveMarkView.hidden = NO;
     }else {
         [self.liveMarkView removeFromSuperview];
     }
@@ -114,12 +143,12 @@
                 [self hideLoading];
                 if (success) {
                     [self adjustFrame];
-                    [self.livePhoto gk_play];
+//                    [self.livePhoto gk_play];
                 }
             });
         }];
     }else {
-        [self.livePhoto gk_play];
+//        [self.livePhoto gk_play];
     }
 }
 
@@ -167,11 +196,19 @@
     [self.imageView bringSubviewToFront:self.livePhoto.livePhotoView];
     [self.livePhoto gk_updateFrame:self.imageView.bounds];
     if (self.liveMarkView.superview) {
-        CGFloat x = 10;
-        CGFloat y = CGRectGetMinY(self.imageView.frame) + 10;
-        CGFloat w = 64;
-        CGFloat h = 20;
-        self.liveMarkView.frame = CGRectMake(x, y, w, h);
+//        CGFloat x = 10;
+//        CGFloat y = CGRectGetMinY(self.imageView.frame) + 10;
+//        CGFloat w = 64;
+//        CGFloat h = 20;
+//        self.liveMarkView.frame = CGRectMake(x, y, w, h);
+
+        [self.liveMarkView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.leading.mas_equalTo(16.f);
+            make.bottom.mas_equalTo(-(BkWindowView.safeAreaInsets.bottom +16.f));
+            make.size.mas_equalTo(CGSizeMake(66.f, 32.f));
+        }];
+        
+        
         
         if (self.imageView.frame.size.height > (self.frame.size.height - kSafeTopSpace - kSafeBottomSpace)) {
             CGPoint center = self.liveMarkView.center;

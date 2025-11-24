@@ -10,7 +10,8 @@
 #import "GKPhotoView+Image.h"
 #import "GKPhotoView+Video.h"
 #import "GKPhotoView+LivePhoto.h"
-
+static NSString * const colorStrPrefix1 = @"0X";
+static NSString * const colorStrPrefix2 = @"#";
 @implementation GKScrollView
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -428,16 +429,56 @@
     }
     return _liveLoadingView;
 }
-
+ 
 - (UIView *)liveMarkView {
     if (!_liveMarkView) {
         _liveMarkView = [[GKLivePhotoMarkView alloc] init];
-        _liveMarkView.backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0.5];
-        _liveMarkView.hidden = YES;
-        _liveMarkView.layer.cornerRadius = 2;
+        __weak typeof(self) weakSelf = self;
+        _liveMarkView.playBlockAction = ^{
+            __strong typeof(self) strongSelf = weakSelf;
+            if (!weakSelf.livePhoto.isPlaying) {
+                [weakSelf.livePhoto gk_play];
+            }
+        };
+        _liveMarkView.backgroundColor = [self yh_colorWithHexString:@"#3C3A46"];
+        _liveMarkView.hidden = NO;
+        _liveMarkView.layer.cornerRadius = 16.f;
         _liveMarkView.layer.masksToBounds = YES;
     }
     return _liveMarkView;
 }
 
+-(UIColor *)yh_colorWithHexString:(NSString *)hexColor{
+    // 替换空格&统一变大写
+    NSString *colorStr = [[hexColor stringByReplacingOccurrencesOfString:@" " withString:@""] uppercaseString];
+    // 替换头部
+    if ([colorStr hasPrefix:colorStrPrefix1]) {
+        colorStr = [colorStr stringByReplacingOccurrencesOfString:colorStrPrefix1 withString:@""];
+    }
+    if ([colorStr hasPrefix:colorStrPrefix2]) {
+        colorStr = [colorStr stringByReplacingOccurrencesOfString:colorStrPrefix2 withString:@""];
+    }
+    // 检查字符串长度
+    if (colorStr.length != 6) {
+        return [UIColor clearColor];
+    }
+    NSRange range;
+    range.location = 0;
+    range.length = 2;
+    //red
+    NSString *redString = [colorStr substringWithRange:range];
+    //green
+    range.location = 2;
+    NSString *greenString = [colorStr substringWithRange:range];
+    //blue
+    range.location = 4;
+    NSString *blueString= [colorStr substringWithRange:range];
+    
+    // Scan values
+    unsigned int red, green, blue;
+    [[NSScanner scannerWithString:redString] scanHexInt:&red];
+    [[NSScanner scannerWithString:greenString] scanHexInt:&green];
+    [[NSScanner scannerWithString:blueString] scanHexInt:&blue];
+    return [UIColor colorWithRed:((CGFloat)red/ 255.0f) green:((CGFloat)green/ 255.0f) blue:((CGFloat)blue/ 255.0f) alpha:1.0f];
+}
 @end
