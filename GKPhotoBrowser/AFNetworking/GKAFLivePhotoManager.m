@@ -21,7 +21,7 @@ static float progressRatio = 4 / 5.0;
 @property (nonatomic, strong) NSMutableArray *filePathList;
 
 @property (nonatomic, copy) void(^progressBlock)(float progress);
-@property (nonatomic, copy) void(^completionBlock)(BOOL success);
+@property (nonatomic, copy) void(^completionBlock)(BOOL success , NSError * _Nullable error);
 
 @end
 
@@ -40,7 +40,7 @@ static float progressRatio = 4 / 5.0;
     [GKLivePhotoManager deallocManager];
 }
 
-- (void)loadLivePhotoWithPhoto:(GKPhoto *)photo targetSize:(CGSize)targetSize progressBlock:(void (^)(float))progressBlock completion:(void (^ _Nullable)(BOOL))completion {
+- (void)loadLivePhotoWithPhoto:(GKPhoto *)photo targetSize:(CGSize)targetSize progressBlock:(void (^)(float))progressBlock completion:(void (^ _Nullable)(BOOL,NSError * _Nullable error))completion {
     self.photo = photo;
     self.progressBlock = progressBlock;
     self.completionBlock = completion;
@@ -95,7 +95,7 @@ static float progressRatio = 4 / 5.0;
             } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                 __strong __typeof(weakSelf) self = weakSelf;
                 if (error) {
-                    !self.completionBlock ?: self.completionBlock(NO);
+                    !self.completionBlock ?: self.completionBlock(NO,error);
                     return;
                 }
                 
@@ -118,7 +118,7 @@ static float progressRatio = 4 / 5.0;
             } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                 __strong __typeof(weakSelf) self = weakSelf;
                 if (error) {
-                    !self.completionBlock ?: self.completionBlock(NO);
+                    !self.completionBlock ?: self.completionBlock(NO,error);
                     return;
                 }
                 
@@ -140,7 +140,7 @@ static float progressRatio = 4 / 5.0;
             } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                 __strong __typeof(weakSelf) self = weakSelf;
                 if (error) {
-                    !self.completionBlock ?: self.completionBlock(NO);
+                    !self.completionBlock ?: self.completionBlock(NO,error);
                     return;
                 }
                 
@@ -209,9 +209,9 @@ static float progressRatio = 4 / 5.0;
         if (livePhoto) {
             self.livePhotoView.livePhoto = livePhoto;
             !self.progressBlock ?: self.progressBlock(1);
-            !self.completionBlock ?: self.completionBlock(YES);
+            !self.completionBlock ?: self.completionBlock(YES,error);
         }else {
-            !self.completionBlock ?: self.completionBlock(NO);
+            !self.completionBlock ?: self.completionBlock(NO,error);
         }
     }];
 }
@@ -228,7 +228,7 @@ static float progressRatio = 4 / 5.0;
     }
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:videoPath]) {
-        !self.completionBlock ?: self.completionBlock(NO);
+        !self.completionBlock ?: self.completionBlock(NO,nil);
         return;
     }
     
@@ -258,9 +258,9 @@ static float progressRatio = 4 / 5.0;
         if (livePhoto) {
             self.livePhotoView.livePhoto = livePhoto;
             !self.progressBlock ?: self.progressBlock(1);
-            !self.completionBlock ?: self.completionBlock(YES);
+            !self.completionBlock ?: self.completionBlock(YES,error);
         }else {
-            !self.completionBlock ?: self.completionBlock(NO);
+            !self.completionBlock ?: self.completionBlock(NO,error);
         }
     }];
 }

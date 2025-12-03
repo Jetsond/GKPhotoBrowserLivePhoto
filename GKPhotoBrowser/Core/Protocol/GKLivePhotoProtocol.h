@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, GKLivePlayStatus) {
 @property (nonatomic, copy, nullable) void(^liveStatusChanged)(id<GKLivePhotoProtocol> _Nonnull mgr, GKLivePlayStatus status);
 
 // 加载livePhoto
-- (void)loadLivePhotoWithPhoto:(GKPhoto *_Nonnull)photo targetSize:(CGSize)targetSize progressBlock:(void(^_Nullable)(float progress))progressBlock completion:(void(^_Nullable)(BOOL success))completion;
+- (void)loadLivePhotoWithPhoto:(GKPhoto *_Nonnull)photo targetSize:(CGSize)targetSize progressBlock:(void(^_Nullable)(float progress))progressBlock completion:(void(^_Nullable)(BOOL success,NSError * _Nullable error))completion;
 
 // 播放livePhoto
 - (void)gk_play;

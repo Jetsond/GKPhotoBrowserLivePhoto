@@ -30,7 +30,7 @@ import CommonCrypto
     public var liveStatusChanged: ((any GKLivePhotoProtocol, GKLivePlayStatus) -> Void)?
     
     var progressBlock: ((Float) -> Void)?
-    var completioBlock: ((Bool) -> Void)?
+    var completioBlock: ((Bool, Error?) -> Void)?
     
     lazy var fileDirectory: String = {
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
@@ -53,7 +53,7 @@ import CommonCrypto
         GKLivePhotoManager.deallocManager()
     }
     
-    public func loadLivePhoto(with photo: GKPhoto, targetSize: CGSize, progressBlock: ((Float) -> Void)?, completion: ((Bool) -> Void)? = nil) {
+    public func loadLivePhoto(with photo: GKPhoto, targetSize: CGSize, progressBlock: ((Float) -> Void)?, completion: (@Sendable (Bool, (any Error)?) -> Void)? = nil) {
         self.photo = photo
         self.progressBlock = progressBlock
         self.completioBlock = completion
@@ -114,7 +114,7 @@ import CommonCrypto
                     .response { [weak self] response in
                         guard let self else { return }
                         if response.error != nil {
-                            self.completioBlock?(false)
+                            self.completioBlock?(false,nil)
                             return
                         }
                         isVideoFinished = true
@@ -137,7 +137,7 @@ import CommonCrypto
                     .response { [weak self] response in
                         guard let self else { return }
                         if response.error != nil {
-                            self.completioBlock?(false)
+                            self.completioBlock?(false,response.error)
                             return
                         }
                         isImageFinished = true
@@ -159,7 +159,7 @@ import CommonCrypto
                     .response { [weak self] response in
                         guard let self else { return }
                         if response.error != nil {
-                            self.completioBlock?(false)
+                            self.completioBlock?(false,response.error)
                             return
                         }
                         if let fileURL = response.fileURL {
@@ -222,9 +222,9 @@ import CommonCrypto
             if let livePhoto {
                 self.livePhotoView?.livePhoto = livePhoto
                 self.progressBlock?(1);
-                self.completioBlock?(true)
+                self.completioBlock?(true,nil)
             }else {
-                self.completioBlock?(false)
+                self.completioBlock?(false,error)
             }
         }
     }
@@ -238,7 +238,7 @@ import CommonCrypto
         }
         
         if !FileManager.default.fileExists(atPath: videoPath) {
-            completioBlock?(false)
+            completioBlock?(false,nil)
             return
         }
         
@@ -253,7 +253,7 @@ import CommonCrypto
         } completion: { [weak self] outVideoPath, outImagePath, error in
             guard let self else { return }
             if error != nil {
-                self.completioBlock?(false)
+                self.completioBlock?(false,error)
                 return
             }
             
@@ -263,7 +263,7 @@ import CommonCrypto
     
     private func createLivePhoto(_ videoPath: String?, _ imagePath: String?, _ targetSize: CGSize) {
         guard let videoPath, let imagePath else {
-            self.completioBlock?(false)
+            self.completioBlock?(false,nil)
             return
         }
         
@@ -279,9 +279,9 @@ import CommonCrypto
             if let livePhoto {
                 self.livePhotoView?.livePhoto = livePhoto
                 self.progressBlock?(1)
-                self.completioBlock?(true)
+                self.completioBlock?(true,nil)
             }else {
-                self.completioBlock?(false)
+                self.completioBlock?(false,error)
             }
         }
     }

@@ -95,7 +95,6 @@
     [self.liveLoadingView startLoading];
     if (self.configure.isShowLivePhotoMark) {
         [self addSubview:self.liveMarkView];
-        self.liveMarkView.hidden = NO;
     }else {
         [self.liveMarkView removeFromSuperview];
     }
@@ -126,13 +125,25 @@
                     [self hideLoading];
                 }
             });
-        } completion:^(BOOL success) {
+        } completion:^(BOOL success,NSError * _Nullable error) {
             __strong __typeof(weakSelf) self = weakSelf;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self hideLoading];
                 if (success) {
+                    [self hideLoading];
                     [self adjustFrame];
-//                    [self.livePhoto gk_play];
+                    self.liveMarkView.hidden = NO;
+                    //                    [self.livePhoto gk_play];
+                }else{
+                    self.liveLoadingView.failText = self.configure.failureText;
+                    //video is not local path
+                    if ([error.userInfo.allKeys containsObject:@"NSLocalizedDescription"]) {
+                        if ([[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"image is not local path"]) {
+                            [self.liveLoadingView showFailure];
+                        }else{
+                            [self hideLoading];
+                        }
+                    }
+                    self.liveMarkView.hidden = YES;
                 }
             });
         }];
