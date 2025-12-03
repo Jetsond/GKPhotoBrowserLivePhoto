@@ -476,11 +476,11 @@
         __strong __typeof(weakSelf) self = weakSelf;
         if (self.gestureHandler.isPanBegan) return;
         if (!self.configure.isShowLivePhotoMark) return;
-        if (status == GKLivePlayStatusBegin) {
-            self.curPhotoView.liveMarkView.hidden = YES;
-        }else {
-            self.curPhotoView.liveMarkView.hidden = NO;
-        }
+//        if (status == GKLivePlayStatusBegin) {
+//            self.curPhotoView.liveMarkView.hidden = YES;
+//        }else {
+//            self.curPhotoView.liveMarkView.hidden = NO;
+//        }
     };
 }
 
