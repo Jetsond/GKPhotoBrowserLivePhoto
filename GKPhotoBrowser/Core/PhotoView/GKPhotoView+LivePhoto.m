@@ -111,7 +111,7 @@
 
 - (void)liveDidScrollAppear {
     if (!self.livePhoto) return;
-    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo) {
+//    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo) {
         [self showLoading];
         __weak __typeof(self) weakSelf = self;
         if ([self.livePhoto respondsToSelector:@selector(setPhoto:)]) {
@@ -123,33 +123,37 @@
                 self.liveLoadingView.progress = progress;
                 if (progress >= 1.0) {
                     [self hideLoading];
+                    self.liveMarkView.hidden = NO;
+                    self.liveMarkView.tag = 1;
                 }
             });
         } completion:^(BOOL success,NSError * _Nullable error) {
             __strong __typeof(weakSelf) self = weakSelf;
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success) {
-                    [self hideLoading];
+                    self.livePhoto.livePhotoView.hidden = NO;
+//                    [self hideLoading];
                     [self adjustFrame];
-                    self.liveMarkView.hidden = NO;
                     //                    [self.livePhoto gk_play];
                 }else{
                     self.liveLoadingView.failText = self.configure.failureText;
                     //video is not local path
                     if ([error.userInfo.allKeys containsObject:@"NSLocalizedDescription"]) {
                         if ([[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"image is not local path"]) {
+                            self.livePhoto.livePhotoView.hidden = YES;
                             [self.liveLoadingView showFailure];
                         }else{
-                            [self hideLoading];
+                           [self hideLoading];
                         }
                     }
+                    self.liveMarkView.tag = 1001;
                     self.liveMarkView.hidden = YES;
                 }
             });
         }];
-    }else {
+//    }else {
 //        [self.livePhoto gk_play];
-    }
+//    }
 }
 
 - (void)liveWillScrollDisappear {
@@ -166,7 +170,9 @@
 - (void)liveDidDismissAppear {
     if (!self.livePhoto) return;
     if (!self.configure.isShowLivePhotoMark) return;
-    self.liveMarkView.hidden = NO;
+    if (self.liveMarkView.tag != 1001) {
+        self.liveMarkView.hidden = NO;
+    }
 }
 
 - (void)liveWillDismissDisappear {

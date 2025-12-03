@@ -422,9 +422,9 @@ static NSString * const colorStrPrefix2 = @"#";
 - (GKLoadingView *)liveLoadingView {
     if (!_liveLoadingView) {
         _liveLoadingView = [GKLoadingView loadingViewWithFrame:self.bounds style:(GKLoadingStyle)self.configure.liveLoadStyle];
-        _liveLoadingView.lineWidth   = 3;
+        _liveLoadingView.lineWidth   = 2;
         _liveLoadingView.radius      = 12;
-        _liveLoadingView.bgColor     = [UIColor blackColor];
+        _liveLoadingView.bgColor     = [UIColor whiteColor];
         _liveLoadingView.strokeColor = [UIColor whiteColor];
     }
     return _liveLoadingView;
@@ -441,7 +441,7 @@ static NSString * const colorStrPrefix2 = @"#";
             }
         };
         _liveMarkView.backgroundColor = [self yh_colorWithHexString:@"#3C3A46"];
-        _liveMarkView.hidden = NO;
+        _liveMarkView.hidden = YES;
         _liveMarkView.layer.cornerRadius = 16.f;
         _liveMarkView.layer.masksToBounds = YES;
     }
