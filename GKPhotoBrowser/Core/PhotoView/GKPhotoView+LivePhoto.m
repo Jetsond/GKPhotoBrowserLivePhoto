@@ -197,11 +197,12 @@
     [self.livePhoto gk_updateFrame:self.imageView.bounds];
     if (self.liveMarkView.superview) {
         CGFloat y = CGRectGetMinY(self.imageView.frame) + 10;
+        CGFloat H = CGRectGetHeight(self.frame);
         self.liveMarkView.frame = CGRectMake(16.f, self.frame.size.height - kSafeBottomSpace-32.f-16.f, 66.f, 32.f);
-        
         if (self.imageView.frame.size.height > (self.frame.size.height - kSafeTopSpace - kSafeBottomSpace)) {
             CGPoint center = self.liveMarkView.center;
-            center.y = (KIsiPhoneX && !self.livePhoto.browser.isLandscape) ? (kSafeTopSpace + 10) : 30;
+            center.x = (KIsiPhoneX && self.livePhoto.browser.isLandscape) ? (kSafeTopSpace + 16) : 16;
+            center.y = H-32;
             self.liveMarkView.center = center;
         }
     }
