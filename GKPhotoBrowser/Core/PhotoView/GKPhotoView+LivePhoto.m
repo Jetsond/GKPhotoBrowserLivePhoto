@@ -91,6 +91,7 @@
     if (!self.livePhoto) return;
     self.loadingView.hidden = YES;
     self.liveLoadingView.frame = self.bounds;
+    [self.liveLoadingView hideFailure];
     [self addSubview:self.liveLoadingView];
 //    [self.liveLoadingView startLoading];
     if (self.configure.isShowLivePhotoMark) {
@@ -111,6 +112,7 @@
 
 - (void)liveDidScrollAppear {
     if (!self.livePhoto) return;
+
 //    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo) {
         [self showLoading];
         __weak __typeof(self) weakSelf = self;
@@ -132,15 +134,16 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success) {
                     self.livePhoto.livePhotoView.hidden = NO;
-//                    [self hideLoading];
                     [self adjustFrame];
-                    //                    [self.livePhoto gk_play];
                 }else{
                     self.liveLoadingView.failText = self.configure.failureText;
                     //video is not local path
                     if ([error.userInfo.allKeys containsObject:@"NSLocalizedDescription"]) {
-                        if ([[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"image is not local path"]) {
+                        if ([[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"image is not local path"] || [[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"video is not local path"]) {
                             self.livePhoto.livePhotoView.hidden = YES;
+                            self.imageView.hidden = YES;
+                            self.photo.failed = YES;
+                            self.photo.url = nil;
                             [self.liveLoadingView showFailure];
                         }else{
                            [self hideLoading];
