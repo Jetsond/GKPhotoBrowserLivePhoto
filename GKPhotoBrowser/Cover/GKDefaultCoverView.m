@@ -40,6 +40,9 @@
     self.pageControl.bounds = CGRectMake(0, 0, size.width, size.height);
     self.pageControl.center = CGPointMake(centerX, centerY);
     self.saveBtn.center = CGPointMake(width - 60, centerY);
+    if (self.browser.configure.hidesPageControl) {
+        self.pageControl.hidden = YES;
+    }
 }
 
 - (void)updateCoverWithCount:(NSInteger)count index:(NSInteger)index {
