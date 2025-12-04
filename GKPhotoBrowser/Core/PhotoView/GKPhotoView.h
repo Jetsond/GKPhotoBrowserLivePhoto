@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<GKPhotoViewDelegate> delegate;
 
 @property (nonatomic, assign) CGSize imageSize;
-
+@property (nonatomic, assign) BOOL isDownloadingLivePhoto;
 /** 双击放大倍数 */
 @property (nonatomic, assign) CGFloat doubleZoomScale;
 
@@ -104,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideLoading;
 - (void)showFailure:(NSError *)error;
 - (void)showPlayBtn;
+- (void)showNewShowLoadin;
 
 // 左右滑动
 - (void)didScrollAppear;
@@ -118,7 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateFrame;
 
 - (void)loadFailedWithError:(NSError *)error;
-
+// livePhoto专用
+- (void)updateLoadingStatus;
 @end
 
 NS_ASSUME_NONNULL_END

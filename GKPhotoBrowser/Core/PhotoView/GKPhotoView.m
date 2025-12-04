@@ -169,7 +169,13 @@ static NSString * const colorStrPrefix2 = @"#";
         [self videoDidScrollAppear];
     }
 }
-
+- (void)updateLoadingStatus {
+    if (self.isDownloadingLivePhoto) {
+        [self showNewShowLoading];
+    } else {
+        [self hideLiveLoading];
+    }
+}
 - (void)willScrollDisappear {
     if (self.photo.isLivePhoto) {
         [self liveWillScrollDisappear];
@@ -422,9 +428,9 @@ static NSString * const colorStrPrefix2 = @"#";
 - (GKLoadingView *)liveLoadingView {
     if (!_liveLoadingView) {
         _liveLoadingView = [GKLoadingView loadingViewWithFrame:self.bounds style:(GKLoadingStyle)self.configure.liveLoadStyle];
-        _liveLoadingView.lineWidth   = 2;
+        _liveLoadingView.lineWidth   = 3;
         _liveLoadingView.radius      = 12;
-        _liveLoadingView.bgColor     = [UIColor whiteColor];
+        _liveLoadingView.bgColor     = [UIColor grayColor];
         _liveLoadingView.strokeColor = [UIColor whiteColor];
     }
     return _liveLoadingView;

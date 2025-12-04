@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showLiveLoading;
 - (void)hideLiveLoading;
 - (void)showLiveFailure:(NSError *)error;
-
+- (void)showNewShowLoading;
 // 左右滑动
 - (void)liveDidScrollAppear;
 - (void)liveWillScrollDisappear;

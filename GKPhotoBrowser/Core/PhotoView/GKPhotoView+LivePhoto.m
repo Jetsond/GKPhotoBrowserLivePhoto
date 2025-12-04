@@ -92,7 +92,7 @@
     self.loadingView.hidden = YES;
     self.liveLoadingView.frame = self.bounds;
     [self addSubview:self.liveLoadingView];
-    [self.liveLoadingView startLoading];
+//    [self.liveLoadingView startLoading];
     if (self.configure.isShowLivePhotoMark) {
         [self addSubview:self.liveMarkView];
     }else {
@@ -161,7 +161,13 @@
     if (!self.configure.isLivePhotoPausedWhenScrollBegan) return;
     [self.livePhoto gk_stop];
 }
-
+- (void)showNewShowLoading {
+    self.loadingView.hidden = NO;
+    [self.liveLoadingView startLoading];
+}
+- (void)hiddenNewLoading {
+    [self hideLoading];
+}
 - (void)liveDidScrollDisappear {
     if (!self.livePhoto) return;
     [self.livePhoto gk_stop];
