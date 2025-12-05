@@ -36,6 +36,9 @@ typedef NS_ENUM(NSUInteger, GKLivePlayStatus) {
 // 停止livePhoto
 - (void)gk_stop;
 
+// 页面将要离开
+- (void)liveDidScrollDisappear;
+
 // 更新布局
 - (void)gk_updateFrame:(CGRect)frame;
 

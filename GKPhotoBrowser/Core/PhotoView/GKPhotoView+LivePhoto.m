@@ -113,7 +113,7 @@
 - (void)liveDidScrollAppear {
     if (!self.livePhoto) return;
 
-//    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo) {
+    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo) {
         [self showLoading];
         __weak __typeof(self) weakSelf = self;
         if ([self.livePhoto respondsToSelector:@selector(setPhoto:)]) {
@@ -154,9 +154,12 @@
                 }
             });
         }];
-//    }else {
+    }else {
+        if (self.photo.failed) {
+            [self.liveLoadingView showFailure];
+        }
 //        [self.livePhoto gk_play];
-//    }
+    }
 }
 
 - (void)liveWillScrollDisappear {
@@ -173,6 +176,7 @@
 }
 - (void)liveDidScrollDisappear {
     if (!self.livePhoto) return;
+    [self.livePhoto liveDidScrollDisappear];
     [self.livePhoto gk_stop];
 }
 
