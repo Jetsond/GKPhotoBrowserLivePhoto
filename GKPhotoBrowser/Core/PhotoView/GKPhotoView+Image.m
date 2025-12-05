@@ -128,124 +128,29 @@
     }];
 }
 
+// 新实现
 - (void)loadWebImageWithPhoto:(GKPhoto *)photo isOrigin:(BOOL)isOrigin placeholderImage:(UIImage *)placeholderImage {
     [self addSubview:self.loadingView];
-    if (!photo.failed) {
-        [self.loadingView hideFailure];
-    }
-    
+    [self.loadingView hideFailure];
+
     if (self.imageView.image) {
         [self adjustFrame];
-    }else if (!CGRectEqualToRect(photo.sourceFrame, CGRectZero)) {
+    } else if (!CGRectEqualToRect(photo.sourceFrame, CGRectZero)) {
         [self adjustFrame];
     }
-    
-    NSURL *url = nil;
-    if (photo.originUrl && photo.originFinished) {
-        url = photo.originUrl;
-    }else {
-        url = (isOrigin && photo.originUrl) ? photo.originUrl : photo.url;
-    }
-    
-    if (url.absoluteString.length > 0) {
-        if (!photo.failed && !placeholderImage) {
-            if (isOrigin && self.configure.originLoadStyle != GKPhotoBrowserLoadStyleCustom) {
-                [self.loadingView startLoading];
-            }else if (!isOrigin && self.configure.loadStyle != GKPhotoBrowserLoadStyleCustom) {
-                [self.loadingView startLoading];
-            }
-        }
-        
-        if (!self.imager) {
-            UIImage *image = [UIImage gkbrowser_imageNamed:url.path];
-            if (!image) {
-                image = self.imageView.image;
-            }
-            if (image) {
-                self.imageView.image = image;
-                self.imageSize = image.size;
-                photo.finished = YES;
-                if (isOrigin) {
-                    photo.originFinished = YES;
-                }
-                
-                // 图片加载完成，回调进度
-                [self loadProgress:1.0 isOriginImage:isOrigin];
-                
-                self.scrollView.scrollEnabled = YES;
-                [self.loadingView stopLoading];
-                [self adjustFrame];
-            }else {
-                photo.failed = YES;
-                [self.loadingView stopLoading];
-                NSError *error = [NSError errorWithDomain:@"com.browser.error" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"图片加载失败"}];
-                [self loadFailedWithError:error];
-                if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom) {
-                    [self addSubview:self.loadingView];
-                    [self.loadingView showFailure];
-                }
-            }
-            return;
-        }
-        
-        __weak __typeof(self) weakSelf = self;
-        GKWebImageProgressBlock progressBlock = ^(NSInteger receivedSize, NSInteger expectedSize) {
-            __strong __typeof(weakSelf) self = weakSelf;
-            if (!self) return;
-            if (expectedSize <= 0) return;
-            float progress = (float)receivedSize / expectedSize;
-            if (progress <= 0) progress = 0;
-            
-            // 图片加载中，进度回调
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self loadProgress:progress isOriginImage:isOrigin];
-            });
-        };
-        
-        GKWebImageCompletionBlock completionBlock = ^(UIImage *image, NSURL *url, BOOL finished, NSError *error) {
-            __strong __typeof(weakSelf) self = weakSelf;
-            if (!self) return;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (error) {
-                    photo.failed = YES;
-                    [self.loadingView stopLoading];
-                    [self loadFailedWithError:error];
-                    if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom) {
-                        [self addSubview:self.loadingView];
-                        [self.loadingView showFailure];
-                    }
-                }else {
-                    self.imageSize = image.size;
-                    photo.finished = YES;
-                    if (isOrigin) {
-                        photo.originFinished = YES;
-                    }
-                    
-                    // 图片加载完成，回调进度
-                    [self loadProgress:1.0 isOriginImage:isOrigin];
-                    
-                    self.scrollView.scrollEnabled = YES;
-                    [self.loadingView stopLoading];
-                }
-                if (!isOrigin) {
-                    [self adjustFrame];
-                }
-                if (self.imageView.image && CGSizeEqualToSize(self.imageView.frame.size, CGSizeZero)) {
-                    [self adjustFrame];
-                }
-                if (!self.imageView.image && !CGSizeEqualToSize(self.imageSize, CGSizeZero)) {
-                    [self adjustFrame];
-                }
-            });
-        };
-        
-        [self.imager setImageForImageView:self.imageView url:url placeholderImage:placeholderImage progress:progressBlock completion:completionBlock];
-    }else {
+
+    NSURL *url = (isOrigin && photo.originUrl) ? photo.originUrl : photo.url;
+
+    // 重置失败状态，避免滑动回来误触发失败 UI
+    photo.failed = NO;
+
+    if (!url || url.absoluteString.length == 0) {
+        // 无有效 URL，直接展示占位或失败
         if (self.imageView.image) {
             photo.finished = YES;
             self.scrollView.scrollEnabled = YES;
             [self.loadingView stopLoading];
-        }else {
+        } else {
             photo.failed = YES;
             [self.loadingView stopLoading];
             NSError *error = [NSError errorWithDomain:@"com.browser.error" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"图片加载失败"}];
@@ -256,7 +161,82 @@
             }
         }
         [self adjustFrame];
+        return;
     }
+
+    if (!photo.failed && !placeholderImage) {
+        if (isOrigin && self.configure.originLoadStyle != GKPhotoBrowserLoadStyleCustom) {
+            [self.loadingView startLoading];
+        } else if (!isOrigin && self.configure.loadStyle != GKPhotoBrowserLoadStyleCustom) {
+            [self.loadingView startLoading];
+        }
+    }
+
+    if (!self.imager) {
+        UIImage *image = [UIImage gkbrowser_imageNamed:url.path] ?: self.imageView.image;
+        if (image) {
+            self.imageView.image = image;
+            self.imageSize = image.size;
+            photo.finished = YES;
+            if (isOrigin) {
+                photo.originFinished = YES;
+            }
+            [self loadProgress:1.0 isOriginImage:isOrigin];
+            self.scrollView.scrollEnabled = YES;
+            [self.loadingView stopLoading];
+            [self adjustFrame];
+        } else {
+            photo.failed = YES;
+            [self.loadingView stopLoading];
+            NSError *error = [NSError errorWithDomain:@"com.browser.error" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"图片加载失败"}];
+            [self loadFailedWithError:error];
+            if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom) {
+                [self addSubview:self.loadingView];
+                [self.loadingView showFailure];
+            }
+        }
+        return;
+    }
+
+    __weak __typeof(self) weakSelf = self;
+    GKWebImageProgressBlock progressBlock = ^(NSInteger receivedSize, NSInteger expectedSize) {
+        __strong __typeof(weakSelf) self = weakSelf;
+        if (!self || expectedSize <= 0) return;
+        float progress = (float)receivedSize / expectedSize;
+        progress = MAX(0, progress);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadProgress:progress isOriginImage:isOrigin];
+        });
+    };
+
+    GKWebImageCompletionBlock completionBlock = ^(UIImage *image, NSURL *url, BOOL finished, NSError *error) {
+        __strong __typeof(weakSelf) self = weakSelf;
+        if (!self) return;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                photo.failed = YES;
+                [self.loadingView stopLoading];
+                [self loadFailedWithError:error];
+                if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom) {
+                    [self addSubview:self.loadingView];
+                    [self.loadingView showFailure];
+                }
+            } else if (image) {
+                photo.failed = NO;
+                self.imageSize = image.size;
+                photo.finished = YES;
+                if (isOrigin) {
+                    photo.originFinished = YES;
+                }
+                [self setupImageView:image];
+            }
+            if (!isOrigin) {
+                [self adjustFrame];
+            }
+        });
+    };
+
+    [self.imager setImageForImageView:self.imageView url:url placeholderImage:placeholderImage progress:progressBlock completion:completionBlock];
 }
 
 - (void)adjustImageFrame {
