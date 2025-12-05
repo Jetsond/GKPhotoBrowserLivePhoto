@@ -11,6 +11,10 @@ import GKLivePhotoManager
 import CommonCrypto
 
 @objc open class GKAlamofireLivePhotoManager: NSObject, @preconcurrency GKLivePhotoProtocol {
+    public func liveDidScrollDisappear() {
+        
+    }
+    
     public var browser: GKPhotoBrowser?
     
     public lazy var livePhotoView: PHLivePhotoView? = {
