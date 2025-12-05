@@ -39,7 +39,9 @@ static float progressRatio = 4 / 5.0;
     }
     [GKLivePhotoManager deallocManager];
 }
-
+- (void)liveDidScrollDisappear {
+    
+}
 - (void)loadLivePhotoWithPhoto:(GKPhoto *)photo targetSize:(CGSize)targetSize progressBlock:(void (^)(float))progressBlock completion:(void (^ _Nullable)(BOOL,NSError * _Nullable error))completion {
     self.photo = photo;
     self.progressBlock = progressBlock;
