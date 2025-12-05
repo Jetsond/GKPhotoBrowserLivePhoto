@@ -146,7 +146,7 @@
                             self.photo.url = nil;
                             [self.liveLoadingView showFailure];
                         }else{
-                           [self hideLoading];
+//                           [self hideLoading];
                         }
                     }
                     self.liveMarkView.tag = 1001;
@@ -177,6 +177,7 @@
 - (void)liveDidScrollDisappear {
     if (!self.livePhoto) return;
     [self.livePhoto liveDidScrollDisappear];
+    [self hideLoading];
     [self.livePhoto gk_stop];
 }
 
