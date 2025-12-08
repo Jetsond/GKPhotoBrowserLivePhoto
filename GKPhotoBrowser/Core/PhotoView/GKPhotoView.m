@@ -111,7 +111,8 @@ static NSString * const colorStrPrefix2 = @"#";
 
     [self.liveMarkView removeFromSuperview];
     self.liveMarkView = nil;
-
+    
+    self.livePhoto.livePhotoView.livePhoto = nil;
     // Reset the photo reference to avoid keeping stale state
     self.photo = nil;
 }
@@ -385,6 +386,7 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!_imageView) {
         _imageView = self.imager ? [self.imager.imageViewClass new] : [UIImageView new];
         _imageView.frame = self.scrollView.bounds;
+        _imageView.contentMode = UIViewContentModeScaleAspectFit;
     }
     return _imageView;
 }
