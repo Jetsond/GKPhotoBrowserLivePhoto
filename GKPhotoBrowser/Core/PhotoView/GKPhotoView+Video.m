@@ -17,18 +17,9 @@
 }
 
 - (void)videoPause {
-    // Pause playback but keep player state so user can resume.
     if (!self.player) return;
     self.photo.isVideoClicked = NO;
-    // show play button for resume
-    if (self.configure.isShowPlayImage) {
-        if (!self.playBtn.superview) {
-            [self addSubview:self.playBtn];
-            [self.playBtn sizeToFit];
-            self.playBtn.center = CGPointMake(self.bounds.size.width * 0.5, self.bounds.size.height * 0.5);
-        }
-        self.playBtn.hidden = NO;
-    }
+    self.playBtn.hidden = NO;
     [self.player gk_pause];
 }
 
@@ -49,27 +40,11 @@
 }
 
 - (void)showVideoFailure:(NSError *)error {
-    // Show failure UI and ensure any player resources are cleaned up for this view
     if (!self.photo.isAutoPlay && !self.photo.isVideoClicked) return;
-    // show failure UI regardless of player state
+    if (!self.player) return;
+    if (self.player.assetURL != self.photo.videoUrl) return;
     [self loadFailedWithError:error];
     [self loadVideo:NO success:NO];
-
-    // Remove player view and clear asset to avoid black-screen when reused
-    if (self.player) {
-        [self.player gk_stop];
-        // remove player view from imageView
-        if (self.player.videoPlayView && self.player.videoPlayView.superview) {
-            [self.player.videoPlayView removeFromSuperview];
-        }
-        // clear assetURL so future checks won't match stale url
-        self.player.assetURL = nil;
-    }
-
-    // hide play button on video failure (keep failure text only)
-    if (self.playBtn) {
-        self.playBtn.hidden = YES;
-    }
 }
 
 - (void)showVideoPlayBtn {
@@ -91,7 +66,7 @@
         return;
     }
     if (!self.player) return;
-
+    
     // 如果没有设置，则设置播放内容
     if (!self.player.assetURL || self.player.assetURL != self.photo.videoUrl) {
         __weak __typeof(self) weakSelf = self;
@@ -103,32 +78,22 @@
             if (!self) return;
             if (!self.player) return;
             if (error) {
-                // show failure UI and cleanup player resources for this view
                 [self loadFailedWithError:error];
                 [self loadVideo:NO success:NO];
-                if (self.player.videoPlayView && self.player.videoPlayView.superview) {
-                    [self.player.videoPlayView removeFromSuperview];
-                }
-                self.player.assetURL = nil;
-            } else {
+            }else {
                 self.player.coverImage = self.imageView.image;
                 self.player.assetURL = url;
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    if (!self.player) return;
                     [self.player gk_prepareToPlay];
                     [self updateFrame];
                     [self.player gk_play];
                 });
             }
         }];
-    } else {
-        // If the player has a matching assetURL but the playView is not attached, attach it.
-        if (self.player.videoPlayView.superview != self.imageView) {
-            [self.imageView addSubview:self.player.videoPlayView];
-        }
+    }else {
         [self.player gk_play];
     }
-
+    
     if (!self.configure.isShowPlayImage) return;
     if (!self.playBtn.superview) {
         [self addSubview:self.playBtn];
@@ -149,41 +114,19 @@
 }
 
 - (void)videoDidScrollDisappear {
-    // Ensure player is fully stopped and cleaned up when view scrolls away to avoid black screens or leaked player layers
     if (!self.player) return;
-
-    // If autoplay is disabled, treat disappear as a full stop and cleanup
     if (!self.photo.isAutoPlay) {
         if (self.photo.isVideoClicked) {
             self.photo.isVideoClicked = NO;
         }
         [self.player gk_stop];
-        // remove player view
-        if (self.player.videoPlayView && self.player.videoPlayView.superview) {
-            [self.player.videoPlayView removeFromSuperview];
-        }
         self.player.assetURL = nil;
-        if (self.configure.isShowPlayImage) {
-            if (!self.playBtn.superview) {
-                [self addSubview:self.playBtn];
-                [self.playBtn sizeToFit];
-                self.playBtn.center = CGPointMake(self.bounds.size.width * 0.5, self.bounds.size.height * 0.5);
-            }
-            self.playBtn.hidden = NO;
-        }
+        self.playBtn.hidden = NO;
         return;
     }
-
-    // For autoplay enabled, just pause but still ensure play button is visible if configured
     [self.player gk_pause];
-    if (self.configure.isShowPlayImage) {
-        if (!self.playBtn.superview) {
-            [self addSubview:self.playBtn];
-            [self.playBtn sizeToFit];
-            self.playBtn.center = CGPointMake(self.bounds.size.width * 0.5, self.bounds.size.height * 0.5);
-        }
-        self.playBtn.hidden = NO;
-    }
+    if (!self.configure.isShowPlayImage) return;
+    self.playBtn.hidden = NO;
 }
 
 - (void)videoDidDismissAppear {
@@ -219,9 +162,6 @@
 - (void)videoDidDismissDisappear {
     if (!self.player) return;
     [self.player gk_stop];
-    if (self.player.videoPlayView && self.player.videoPlayView.superview) {
-        [self.player.videoPlayView removeFromSuperview];
-    }
     self.player.assetURL = nil;
 }
 
@@ -232,15 +172,7 @@
     }
     if (!self.photo.isAutoPlay && !self.photo.isVideoClicked) return;
     if (!self.player) return;
-
-    // If the player's asset doesn't match the current photo, remove any existing playView to avoid showing wrong content
-    if (self.player.assetURL != self.photo.videoUrl) {
-        if (self.player.videoPlayView && self.player.videoPlayView.superview) {
-            [self.player.videoPlayView removeFromSuperview];
-        }
-        return;
-    }
-
+    if (self.player.assetURL != self.photo.videoUrl) return;
     if (self.player.videoPlayView.superview != self.imageView) {
         [self.imageView addSubview:self.player.videoPlayView];
         self.imageView.userInteractionEnabled = YES;
