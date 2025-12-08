@@ -81,34 +81,22 @@ static NSString * const colorStrPrefix2 = @"#";
 
 - (void)prepareForReuse {
     self.imageSize = CGSizeZero;
-
     [self.loadingView stopLoading];
     [self.loadingView removeFromSuperview];
-
-    // remove play button from hierarchy (if any)
     [self.playBtn removeFromSuperview];
-
     [self.videoLoadingView stopLoading];
     [self.videoLoadingView removeFromSuperview];
-
     [self.liveLoadingView stopLoading];
     [self.liveLoadingView removeFromSuperview];
-
     [self cancelImageLoad];
-
-    // Ensure video-related resources are cleaned up when the view is reused
-    [self cleanupVideoResources];
-
     if (self.imager && [self.imager respondsToSelector:@selector(setPhoto:)]) {
         self.imager.photo = self.photo;
     }
     if (self.configure.isClearMemoryWhenViewReuse && [self.imager respondsToSelector:@selector(clearMemoryForURL:)]) {
         [self.imager clearMemoryForURL:self.photo.url];
     }
-
     [self.imageView removeFromSuperview];
     self.imageView = nil;
-
     [self.liveMarkView removeFromSuperview];
     self.liveMarkView = nil;
     
@@ -186,14 +174,10 @@ static NSString * const colorStrPrefix2 = @"#";
 }
 
 - (void)didScrollDisappear {
-    // Prefer calling the explicit handlers for live photo / video
     if (self.photo.isLivePhoto) {
         [self liveDidScrollDisappear];
-    } else if (self.photo.isVideo) {
+    }else if (self.photo.isVideo) {
         [self videoDidScrollDisappear];
-    } else {
-        // If the photo is nil or not a video/livePhoto, still ensure any lingering video state is cleared
-        [self cleanupVideoResources];
     }
 }
 
@@ -262,49 +246,6 @@ static NSString * const colorStrPrefix2 = @"#";
     
     if (self.photo) {
         [self adjustFrame];
-    }
-}
-
-- (void)cleanupVideoResources {
-    // Stop playback and clear video related UI to avoid stale/black-screen states when the view is reused or recycled.
-    @try {
-        // If categories implement videoPause / videoDidScrollDisappear, call them to stop playback
-        if ([self respondsToSelector:@selector(videoPause)]) {
-            [self videoPause];
-        }
-        if ([self respondsToSelector:@selector(videoDidScrollDisappear)]) {
-            [self videoDidScrollDisappear];
-        }
-
-        // Hide the play button if present
-        if (self.playBtn) {
-            self.playBtn.hidden = YES;
-            [self.playBtn removeFromSuperview];
-        }
-
-        // Stop & remove video loading UI
-        if (self.videoLoadingView) {
-            [self.videoLoadingView stopLoading];
-            [self.videoLoadingView removeFromSuperview];
-        }
-        if (self.loadingView && self.photo.isVideo) {
-            [self.loadingView stopLoading];
-            [self.loadingView removeFromSuperview];
-        }
-
-        // Remove any AV player layers that might remain on the imageView.layer
-        Class avPlayerLayerClass = NSClassFromString(@"AVPlayerLayer");
-        if (avPlayerLayerClass && self.imageView && self.imageView.layer.sublayers) {
-            NSArray *sublayers = [self.imageView.layer.sublayers copy];
-            for (CALayer *sublayer in sublayers) {
-                if ([sublayer isKindOfClass:avPlayerLayerClass]) {
-                    [sublayer removeFromSuperlayer];
-                }
-            }
-        }
-
-    } @catch (NSException *exception) {
-        // defensively ignore any exception during cleanup
     }
 }
 
