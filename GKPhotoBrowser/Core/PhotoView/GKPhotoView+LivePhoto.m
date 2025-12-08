@@ -115,6 +115,7 @@
 
     if (!self.livePhoto.photo || self.livePhoto.photo != self.photo) {
         [self showLoading];
+        self.liveMarkView.tag = 1001;
         __weak __typeof(self) weakSelf = self;
         if ([self.livePhoto respondsToSelector:@selector(setPhoto:)]) {
             self.livePhoto.photo = self.photo;
@@ -157,6 +158,9 @@
     }else {
         if (self.photo.failed) {
             [self.liveLoadingView showFailure];
+            self.liveMarkView.tag = 1001;
+        }else{
+            self.liveMarkView.tag = 1;
         }
 //        [self.livePhoto gk_play];
     }
