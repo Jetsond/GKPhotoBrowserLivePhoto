@@ -160,7 +160,9 @@
             [self.liveLoadingView showFailure];
             self.liveMarkView.tag = 1001;
         }else{
+            self.liveMarkView.hidden = NO;
             self.liveMarkView.tag = 1;
+            [self showliveMarkView];
         }
 //        [self.livePhoto gk_play];
     }
@@ -223,7 +225,7 @@
         CGFloat y = CGRectGetMinY(self.imageView.frame) + 10;
         CGFloat H = CGRectGetHeight(self.frame);
         self.liveMarkView.frame = CGRectMake(16.f, self.frame.size.height - kSafeBottomSpace-32.f-16.f, 66.f, 32.f);
-        if (self.imageView.frame.size.height > (self.frame.size.height - kSafeTopSpace - kSafeBottomSpace)) {
+        if (self.imageView.frame.size.height > (self.frame.size.height - kSafeTopSpace - kSafeBottomSpace) && self.livePhoto.browser.isLandscape) {
             CGPoint center = self.liveMarkView.center;
             center.x = (KIsiPhoneX && self.livePhoto.browser.isLandscape) ? (kSafeTopSpace + 16) : 16;
             center.y = H-32;
@@ -231,5 +233,15 @@
         }
     }
 }
-
+- (void)showliveMarkView {
+    [self addSubview:self.liveMarkView];
+    CGFloat H = CGRectGetHeight(self.frame);
+    self.liveMarkView.frame = CGRectMake(16.f, self.frame.size.height - kSafeBottomSpace-32.f-16.f, 66.f, 32.f);
+    if (self.imageView.frame.size.height > (self.frame.size.height - kSafeTopSpace - kSafeBottomSpace) && self.livePhoto.browser.isLandscape) {
+        CGPoint center = self.liveMarkView.center;
+        center.x = (KIsiPhoneX && self.livePhoto.browser.isLandscape) ? (kSafeTopSpace + 16) : 16;
+        center.y = H-32;
+        self.liveMarkView.center = center;
+    }
+}
 @end
