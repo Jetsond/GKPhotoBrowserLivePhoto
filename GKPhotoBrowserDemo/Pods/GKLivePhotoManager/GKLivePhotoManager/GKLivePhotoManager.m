@@ -134,7 +134,7 @@ static GKLivePhotoManager *_manager = nil;
     NSURL *imageURL = [NSURL fileURLWithPath:imagePath];
     
     __weak __typeof(self) weakSelf = self;
-    [PHLivePhoto requestLivePhotoWithResourceFileURLs:@[videoURL, imageURL] placeholderImage:nil targetSize:targetSize contentMode:PHImageContentModeAspectFill resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nonnull info) {
+    [PHLivePhoto requestLivePhotoWithResourceFileURLs:@[imageURL,videoURL] placeholderImage:nil targetSize:targetSize contentMode:PHImageContentModeAspectFill resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nonnull info) {
         __strong __typeof(weakSelf) self = weakSelf;
         if (livePhoto) {
             !completion ?: completion(livePhoto, nil);
