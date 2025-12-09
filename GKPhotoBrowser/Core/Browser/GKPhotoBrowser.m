@@ -458,7 +458,8 @@
         [self.photos enumerateObjectsUsingBlock:^(GKPhoto *obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj.videoUrl isEqual:mgr.assetURL]) {
                 obj.videoSize = size;
-                *stop = YES;
+                ///转发相同地址videosize设置问题，后期转发应该为重新上传可解决此问题
+//                *stop = YES;
             }
         }];
         if ([self.curPhoto.videoUrl isEqual:mgr.assetURL]) {
