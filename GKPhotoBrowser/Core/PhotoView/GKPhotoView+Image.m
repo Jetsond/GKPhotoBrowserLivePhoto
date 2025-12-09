@@ -57,7 +57,7 @@
         }
         
         self.imageView.image = placeholderImage;
-        self.imageView.contentMode = photo.sourceImageView.contentMode;
+        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         self.scrollView.scrollEnabled = NO;
         
         if (photo.image) {
