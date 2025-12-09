@@ -139,7 +139,7 @@
                     self.liveLoadingView.failText = self.configure.failureText;
                     //video is not local path
                     if ([error.userInfo.allKeys containsObject:@"NSLocalizedDescription"]) {
-                        if ([[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"image is not local path"] || [[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"video is not local path"]) {
+                        if ([[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"image is not local path"] || [[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"video is not local path"]|| error.code == -1009) {
                             self.livePhoto.livePhotoView.hidden = YES;
                             self.imageView.hidden = YES;
                             self.photo.failed = YES;
