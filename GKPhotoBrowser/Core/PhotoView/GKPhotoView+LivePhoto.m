@@ -156,6 +156,7 @@
         }];
     }else {
         if (self.photo.failed) {
+            [self addSubview:self.liveLoadingView];
             [self.liveLoadingView showFailure];
             self.liveMarkView.tag = 1001;
         }else{
