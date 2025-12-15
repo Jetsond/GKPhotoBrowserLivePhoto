@@ -241,6 +241,9 @@
 
 - (void)adjustImageFrame {
     CGRect frame = self.scrollView.frame;
+    if (!self.imageView.image) {
+        return;
+    }
     if (frame.size.width == 0 || frame.size.height == 0) return;
     
     if (self.imageView.image || !CGSizeEqualToSize(self.imageSize, CGSizeZero)) {
