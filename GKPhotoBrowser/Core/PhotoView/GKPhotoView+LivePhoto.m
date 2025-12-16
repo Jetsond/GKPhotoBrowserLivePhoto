@@ -112,7 +112,7 @@
 
 - (void)liveDidScrollAppear {
     if (!self.livePhoto) return;
-    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo || self.liveMarkView.tag == 1001) {
+    if (!self.livePhoto.photo || self.livePhoto.photo != self.photo || self.liveMarkView.tag == 1001 || !self.livePhoto.livePhotoView.livePhoto) {
         [self showLoading];
         self.liveMarkView.tag = 1001;
         __weak __typeof(self) weakSelf = self;
