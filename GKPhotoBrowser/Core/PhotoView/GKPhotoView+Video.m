@@ -68,7 +68,7 @@
     if (!self.player) return;
     
     // 如果没有设置，则设置播放内容
-    if (!self.player.assetURL || self.player.assetURL != self.photo.videoUrl) {
+    if (!self.player.assetURL || self.player.assetURL != self.photo.videoUrl || CGSizeEqualToSize(self.player.videoPlayView.frame.size, CGSizeMake(self.frame.size.width, self.frame.size.width))) {
         __weak __typeof(self) weakSelf = self;
         if ([self.player respondsToSelector:@selector(setPhoto:)]) {
             self.player.photo = self.photo;
