@@ -219,6 +219,7 @@
                 [self loadFailedWithError:error];
                 if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom) {
                     [self addSubview:self.loadingView];
+                    self.loadingView.hidden = NO;
                     [self.loadingView showFailure];
                 }
             } else if (image) {
