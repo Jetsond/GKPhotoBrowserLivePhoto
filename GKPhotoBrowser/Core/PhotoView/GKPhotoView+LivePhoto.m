@@ -144,6 +144,7 @@
                             self.imageView.hidden = YES;
                             self.photo.failed = YES;
                             self.photo.url = nil;
+                            [self addSubview:self.liveLoadingView];
                             [self.liveLoadingView showFailure];
                         }else{
 //                           [self hideLoading];
