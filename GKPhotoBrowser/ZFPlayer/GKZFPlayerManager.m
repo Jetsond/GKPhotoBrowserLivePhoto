@@ -122,7 +122,9 @@
 - (void)dealloc {
     [self gk_stop];
 }
-
+- (void)chao_didDissappear {
+    //特殊处理
+}
 #pragma mark - GKVideoPlayerProtocol
 - (void)gk_prepareToPlay {
     if (!_assetURL) return;

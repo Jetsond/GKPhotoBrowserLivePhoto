@@ -71,6 +71,8 @@ typedef NS_ENUM(NSUInteger, GKVideoPlayerStatus) {
 // 静音
 - (void)gk_setMute:(BOOL)mute;
 
+// 页面离开回调
+- (void)chao_didDissappear;
 @optional
 /// 当前对应的数据模型
 @property (nonatomic, weak, nullable) GKPhoto *photo;

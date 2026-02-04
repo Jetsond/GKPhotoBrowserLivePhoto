@@ -80,7 +80,9 @@
     self.status = GKVideoPlayerStatusPrepared;
     [self initPlayer];
 }
-
+- (void)chao_didDissappear {
+    //特殊处理
+}
 - (void)gk_play {
     [self.player play];
     _isPlaying = YES;

@@ -102,6 +102,7 @@
 }
 
 - (void)videoWillScrollDisappear {
+    [self.player chao_didDissappear];
     if (!self.player) return;
     if (!self.configure.isVideoPausedWhenScrollBegan) return;
     if (!self.photo.isAutoPlay && !self.photo.isVideoClicked) {
