@@ -217,7 +217,7 @@
                 photo.failed = YES;
                 [self.loadingView stopLoading];
                 [self loadFailedWithError:error];
-                if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom) {
+                if (self.configure.failStyle != GKPhotoBrowserFailStyleCustom &&!photo.isLivePhoto) {
                     [self addSubview:self.loadingView];
                     self.loadingView.hidden = NO;
                     [self.loadingView showFailure];
