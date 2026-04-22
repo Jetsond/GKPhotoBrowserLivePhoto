@@ -194,6 +194,7 @@
     if (self.liveMarkView.tag != 1001) {
         self.liveMarkView.hidden = NO;
     }
+    [self showToolView];
 }
 
 - (void)liveWillDismissDisappear {
@@ -203,6 +204,7 @@
     }
     if (!self.configure.isShowLivePhotoMark) return;
     self.liveMarkView.hidden = YES;
+    [self hideToolView];
 }
 
 - (void)liveDidDismissDisappear {
@@ -233,6 +235,7 @@
             self.liveMarkView.center = center;
         }
     }
+        [self layoutToolView];
 }
 - (void)showliveMarkView {
     [self addSubview:self.liveMarkView];

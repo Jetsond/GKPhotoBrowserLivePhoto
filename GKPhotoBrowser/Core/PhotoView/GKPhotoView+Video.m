@@ -142,6 +142,7 @@
         if (!self.configure.isShowPlayImage) return;
         self.playBtn.hidden = YES;
     }
+    [self showToolView];
 }
 
 - (void)videoWillDismissDisappear {
@@ -158,6 +159,7 @@
             self.isPlayingWhenPan = NO;
         }
     }
+    [self hideToolView];
 }
 
 - (void)videoDidDismissDisappear {
@@ -180,6 +182,7 @@
     }
     [self.imageView bringSubviewToFront:self.player.videoPlayView];
     [self.player gk_updateFrame:self.imageView.bounds];
+    [self layoutToolView];
 }
 
 - (void)loadVideo:(BOOL)isStart success:(BOOL)success {

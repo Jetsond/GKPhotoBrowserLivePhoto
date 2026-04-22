@@ -89,4 +89,8 @@
 - (void)photoBrowser:(GKPhotoBrowser *)browser scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
 - (void)photoBrowser:(GKPhotoBrowser *)browser scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView;
 
+// 工具ToolView
+- (void)photoViewDidTapShare:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapDownload:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapMore:(GKPhotoBrowser *)browser;
 @end

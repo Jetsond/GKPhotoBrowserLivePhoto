@@ -199,6 +199,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否隐藏saveBtn，默认YES
 @property (nonatomic, assign) BOOL hidesSavedBtn;
 
+/// 是否展示工具view(分享 下载 更多)
+@property (nonatomic, assign) BOOL isShowTool;
+
 #pragma mark - 图片相关
 /// 图片加载类
 @property (nonatomic, strong, readonly) id<GKWebImageProtocol> imager;

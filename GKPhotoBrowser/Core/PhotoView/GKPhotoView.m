@@ -58,6 +58,8 @@ static NSString * const colorStrPrefix2 = @"#";
 
 @property (nonatomic, strong) GKPhoto        *photo;
 
+@property (nonatomic, strong) UIView *toolview;
+
 @end
 
 @implementation GKPhotoView
@@ -71,6 +73,9 @@ static NSString * const colorStrPrefix2 = @"#";
         self.backgroundColor = [UIColor clearColor];
         [self addSubview:self.scrollView];
         [self.scrollView addSubview:self.imageView];
+        if (configure.isShowTool) {
+            [self addSubview:self.toolview];
+        }
     }
     return self;
 }
@@ -103,6 +108,8 @@ static NSString * const colorStrPrefix2 = @"#";
     self.livePhoto.livePhotoView.livePhoto = nil;
     // Reset the photo reference to avoid keeping stale state
     self.photo = nil;
+    [self.toolview removeFromSuperview];
+    self.toolview = nil;
 }
 
 - (void)resetImageView {
@@ -186,6 +193,8 @@ static NSString * const colorStrPrefix2 = @"#";
         [self liveDidDismissAppear];
     }else if (self.photo.isVideo) {
         [self videoDidDismissAppear];
+    }else{
+        [self showToolView];
     }
 }
 
@@ -194,6 +203,8 @@ static NSString * const colorStrPrefix2 = @"#";
         [self liveWillDismissDisappear];
     }else if (self.photo.isVideo) {
         [self videoWillDismissDisappear];
+    }else{
+        [self hideToolView];
     }
 }
 
@@ -306,6 +317,108 @@ static NSString * const colorStrPrefix2 = @"#";
     }
 }
 
+#pragma mark - tool
+- (UIButton *)createImageBtn:(UIImage *)img action:(SEL)sel {
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn.frame = CGRectMake(0, 0, 26, 26);
+    [btn setImage:img forState:UIControlStateNormal];
+    [btn addTarget:self action:sel forControlEvents:UIControlEventTouchUpInside];
+    return btn;
+}
+
+- (void)layoutToolView {
+    if (!CGRectEqualToRect(self.toolview.frame, CGRectZero) || !self.configure.isShowTool) {
+        return;
+    }
+    CGFloat btnSize = 26.f;
+    CGFloat spacing = 12.f;
+
+    UIButton *shareBtn = self.toolview.subviews[0];
+    UIButton *downloadBtn = self.toolview.subviews[1];
+    UIButton *moreBtn = self.toolview.subviews[2];
+
+    CGFloat toolWidth = btnSize * 3 + spacing * 2;
+    CGFloat toolHeight = btnSize;
+
+    CGFloat rightMargin = 20.f;
+    CGFloat bottomMargin = 17.f; // ⭐ 设计稿要求
+
+    CGFloat x = self.bounds.size.width - rightMargin - toolWidth;
+
+    // 👉 safeArea bottom
+    CGFloat safeBottom = self.safeAreaInsets.bottom;
+
+    // ⭐ 关键：包含 safeArea 的底部间距
+    CGFloat y = self.bounds.size.height - bottomMargin - safeBottom - toolHeight;
+
+    self.toolview.frame = CGRectMake(x, y, toolWidth, toolHeight);
+
+    // 按钮布局
+    shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+    downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
+    moreBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
+}
+
+- (void)showToolView {
+    if (!self.configure.isShowTool) {
+        return;
+    }
+    if (!self.toolview.superview) {
+        [self addSubview:self.toolview];
+    }
+    // 防止闪烁调用多次
+    if (!_toolview.isHidden) {
+        return;
+    }
+
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    [self layoutToolView];
+
+    self.toolview.hidden = NO;
+
+    self.toolview.alpha = 0;
+
+    self.toolview.transform = CGAffineTransformMakeTranslation(0, 10);
+
+    [UIView animateWithDuration:0.25 animations:^{
+
+        self.toolview.alpha = 1;
+
+        self.toolview.transform = CGAffineTransformIdentity;
+
+    }];
+}
+
+- (void)hideToolView {
+    // 防止闪烁调用多次
+    if (_toolview.isHidden) {
+        return;
+    }
+    [UIView animateWithDuration:0.2 animations:^{
+        self.toolview.alpha = 0;
+        self.toolview.transform = CGAffineTransformMakeTranslation(0, 10);
+    } completion:^(BOOL finished) {
+        self.toolview.hidden = YES;
+    }];
+}
+- (void)shareAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapShare:)]) {
+        [self.delegate photoViewDidTapShare:self];
+    }
+}
+
+- (void)downloadAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapDownload:)]) {
+        [self.delegate photoViewDidTapDownload:self];
+    }
+}
+
+- (void)moreAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapMore:)]) {
+        [self.delegate photoViewDidTapMore:self];
+    }
+}
 #pragma mark - 懒加载
 - (GKScrollView *)scrollView {
     if (!_scrollView) {
@@ -395,6 +508,24 @@ static NSString * const colorStrPrefix2 = @"#";
         _liveMarkView.layer.masksToBounds = YES;
     }
     return _liveMarkView;
+}
+
+- (UIView *)toolview {
+    if (!_toolview) {
+        _toolview = [[UIView alloc] init];
+        _toolview.backgroundColor = UIColor.clearColor;
+       
+        UIButton *shareBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_share") action:@selector(shareAction)];
+        UIButton *downloadBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_downld") action:@selector(downloadAction)];
+        UIButton *moreBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_more") action:@selector(moreAction)];
+
+        [_toolview addSubview:shareBtn];
+        [_toolview addSubview:downloadBtn];
+        [_toolview addSubview:moreBtn];
+
+        _toolview.tag = 999; // 方便后面找
+    }
+    return _toolview;
 }
 
 -(UIColor *)yh_colorWithHexString:(NSString *)hexColor{

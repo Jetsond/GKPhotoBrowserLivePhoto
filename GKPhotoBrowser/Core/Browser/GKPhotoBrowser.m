@@ -731,6 +731,24 @@
     }
 }
 
+- (void)photoViewDidTapMore:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapMore:)]) {
+        [self.delegate photoViewDidTapMore:self];
+    }
+}
+
+- (void)photoViewDidTapShare:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapShare:)]) {
+        [self.delegate photoViewDidTapShare:self];
+    }
+}
+
+- (void)photoViewDidTapDownload:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapDownload:)]) {
+        [self.delegate photoViewDidTapDownload:self];
+    }
+}
+
 #pragma mark - GKPhotoGestureDelegate
 - (void)browserWillDisappear {
     [self.curPhotoView willDismissDisappear];

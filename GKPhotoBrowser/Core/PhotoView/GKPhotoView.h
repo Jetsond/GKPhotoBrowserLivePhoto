@@ -36,6 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
 // 视频加载
 - (void)photoView:(GKPhotoView *)photoView loadStart:(BOOL)isStart success:(BOOL)success;
 
+- (void)photoViewDidTapShare:(GKPhotoView *)photoView;
+
+- (void)photoViewDidTapDownload:(GKPhotoView *)photoView;
+
+- (void)photoViewDidTapMore:(GKPhotoView *)photoView;
+
 @end
 
 @class GKPhotoBrowser;
@@ -106,6 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showPlayBtn;
 - (void)showNewShowLoadin;
 
+- (void)showToolView;
+- (void)hideToolView;
+- (void)layoutToolView;
 // 左右滑动
 - (void)didScrollAppear;
 - (void)willScrollDisappear;

@@ -10,6 +10,27 @@
 
 @implementation GKPhotoView (Image)
 
+- (void)updateToolViewState {
+    // 1. 总开关关闭，直接隐藏
+    if (!self.configure.isShowTool) {
+        [self hideToolView];
+        return;
+    }
+    // 2. 图片是否ready（兼容缓存/占位图场景）
+    BOOL hasImage = (self.imageView.image != nil);
+    BOOL finished = self.photo.finished;
+    BOOL failed = self.photo.failed;
+
+    BOOL ready = (finished || hasImage) && !failed;
+
+    // 3. 控制显示 / 隐藏
+    if (ready) {
+        [self showToolView];
+    } else {
+        [self hideToolView];
+    }
+}
+
 - (void)loadImageWithPhoto:(GKPhoto *)photo isOrigin:(BOOL)isOrigin {
     // 取消以前的加载
     [self cancelImageLoad];
@@ -231,6 +252,7 @@
                 }
                 [self setupImageView:image];
             }
+            [self updateToolViewState];
             if (!isOrigin) {
                 [self adjustFrame];
             }
@@ -352,6 +374,8 @@
     [self.loadingView hideFailure];
     [self.loadingView removeFromSuperview];
     [self adjustFrame];
+    [self updateToolViewState];
+    [self layoutToolView];
 }
 
 - (void)loadProgress:(float)progress isOriginImage:(BOOL)isOriginImage {
