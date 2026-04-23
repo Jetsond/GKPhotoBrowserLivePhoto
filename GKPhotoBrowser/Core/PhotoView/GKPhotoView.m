@@ -363,6 +363,9 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!self.configure.isShowTool) {
         return;
     }
+    if (!self.imageView.image) {
+        return;
+    }
     if (self.toolview.superview == nil) {
         [self addSubview:self.toolview];
     }
