@@ -327,7 +327,10 @@ static NSString * const colorStrPrefix2 = @"#";
 }
 
 - (void)layoutToolView {
-    if (!CGRectEqualToRect(self.toolview.frame, CGRectZero) || !self.configure.isShowTool) {
+    if (!self.configure.isShowTool) {
+        return;
+    }
+    if (!CGRectEqualToRect(self.toolview.frame, CGRectZero)) {
         return;
     }
     CGFloat btnSize = 26.f;
@@ -341,19 +344,16 @@ static NSString * const colorStrPrefix2 = @"#";
     CGFloat toolHeight = btnSize;
 
     CGFloat rightMargin = 20.f;
-    CGFloat bottomMargin = 17.f; // ⭐ 设计稿要求
+    CGFloat bottomMargin = 17.f;
 
     CGFloat x = self.bounds.size.width - rightMargin - toolWidth;
 
-    // 👉 safeArea bottom
     CGFloat safeBottom = self.safeAreaInsets.bottom;
 
-    // ⭐ 关键：包含 safeArea 的底部间距
     CGFloat y = self.bounds.size.height - bottomMargin - safeBottom - toolHeight;
 
     self.toolview.frame = CGRectMake(x, y, toolWidth, toolHeight);
 
-    // 按钮布局
     shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
     downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
     moreBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
@@ -363,7 +363,7 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!self.configure.isShowTool) {
         return;
     }
-    if (!self.toolview.superview) {
+    if (self.toolview.superview == nil) {
         [self addSubview:self.toolview];
     }
     // 防止闪烁调用多次
