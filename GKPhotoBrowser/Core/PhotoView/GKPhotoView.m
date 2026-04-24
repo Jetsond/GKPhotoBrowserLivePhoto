@@ -366,6 +366,10 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!self.imageView.image) {
         return;
     }
+    if (self.photo.isLivePhoto &&!self.livePhoto.livePhotoView.livePhoto) {
+        return;
+    }
+    
     if (self.toolview.superview == nil) {
         [self addSubview:self.toolview];
     }
@@ -517,7 +521,7 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!_toolview) {
         _toolview = [[UIView alloc] init];
         _toolview.backgroundColor = UIColor.clearColor;
-       
+        _toolview.hidden = YES;
         UIButton *shareBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_share") action:@selector(shareAction)];
         UIButton *downloadBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_downld") action:@selector(downloadAction)];
         UIButton *moreBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_more") action:@selector(moreAction)];

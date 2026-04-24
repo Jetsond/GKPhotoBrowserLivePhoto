@@ -183,7 +183,7 @@
     [self.imageView bringSubviewToFront:self.player.videoPlayView];
     [self.player gk_updateFrame:self.imageView.bounds];
     [self layoutToolView];
-    [self showToolView];
+   
 }
 
 - (void)loadVideo:(BOOL)isStart success:(BOOL)success {
@@ -198,8 +198,10 @@
         }else {
             if (success) {
                 [self.videoLoadingView stopLoading];
+                [self showToolView];
             }else {
                 [self.videoLoadingView showFailure];
+                [self hideToolView];
             }
         }
     }

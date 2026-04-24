@@ -135,6 +135,7 @@
                 if (success) {
                     self.livePhoto.livePhotoView.hidden = NO;
                     [self adjustFrame];
+                    [self showToolView];
                 }else{
                     self.liveLoadingView.failText = self.configure.failureText;
                     //video is not local path
@@ -247,5 +248,6 @@
         center.y = H-32;
         self.liveMarkView.center = center;
     }
+    [self showToolView];
 }
 @end

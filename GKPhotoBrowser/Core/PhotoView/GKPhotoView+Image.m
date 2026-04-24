@@ -153,7 +153,8 @@
 - (void)loadWebImageWithPhoto:(GKPhoto *)photo isOrigin:(BOOL)isOrigin placeholderImage:(UIImage *)placeholderImage {
     [self addSubview:self.loadingView];
     [self.loadingView hideFailure];
-
+//    [self showToolView];
+    
     if (self.imageView.image) {
         [self adjustFrame];
     } else if (!CGRectEqualToRect(photo.sourceFrame, CGRectZero)) {
