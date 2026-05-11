@@ -222,7 +222,10 @@ static NSString * const colorStrPrefix2 = @"#";
     }else if (self.photo.isVideo) {
         [self videoUpdateFrame];
     }else{
-        [self layoutToolView];
+        //防止初始化无效调用
+        if (self.photo) {
+            [self layoutToolView];
+        }
     }
 }
 
