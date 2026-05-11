@@ -221,6 +221,8 @@ static NSString * const colorStrPrefix2 = @"#";
         [self liveUpdateFrame];
     }else if (self.photo.isVideo) {
         [self videoUpdateFrame];
+    }else{
+        [self layoutToolView];
     }
 }
 
@@ -330,9 +332,13 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!self.configure.isShowTool) {
         return;
     }
-    if (!CGRectEqualToRect(self.toolview.frame, CGRectZero)) {
+    BOOL isLandscape = self.bounds.size.width > self.bounds.size.height;
+    // 已经有frame并且方向没变化
+    if (!CGRectEqualToRect(self.toolview.frame, CGRectZero) &&
+        self.lastToolViewLandscape == isLandscape) {
         return;
     }
+    self.lastToolViewLandscape = isLandscape;
     CGFloat btnSize = 26.f;
     CGFloat spacing = 12.f;
 
@@ -344,18 +350,20 @@ static NSString * const colorStrPrefix2 = @"#";
     CGFloat toolHeight = btnSize;
 
     CGFloat rightMargin = 20.f;
-    CGFloat bottomMargin = 17.f;
+    CGFloat bottomMargin = isLandscape ? 12.f : 17.f;
+
+    CGFloat safeBottom = isLandscape ? 0 : self.safeAreaInsets.bottom;
 
     CGFloat x = self.bounds.size.width - rightMargin - toolWidth;
-
-    CGFloat safeBottom = self.safeAreaInsets.bottom;
 
     CGFloat y = self.bounds.size.height - bottomMargin - safeBottom - toolHeight;
 
     self.toolview.frame = CGRectMake(x, y, toolWidth, toolHeight);
 
     shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+
     downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
+
     moreBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
 }
 

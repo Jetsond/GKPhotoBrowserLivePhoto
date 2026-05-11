@@ -79,6 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat doubleZoomScale;
 
 @property (nonatomic, assign) CGFloat realZoomScale;
+// 缓存上次是否横竖屏 用来修改 toolView
+@property (nonatomic, assign) BOOL lastToolViewLandscape;
 
 - (instancetype)initWithFrame:(CGRect)frame configure:(GKPhotoBrowserConfigure *)configure;
 
