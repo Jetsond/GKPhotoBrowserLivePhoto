@@ -355,7 +355,7 @@ static NSString * const colorStrPrefix2 = @"#";
     CGFloat rightMargin = 20.f;
     CGFloat bottomMargin = isLandscape ? 12.f : 17.f;
 
-    CGFloat safeBottom = isLandscape ? 0 : self.safeAreaInsets.bottom;
+    CGFloat safeBottom = isLandscape ? 0 : [self gk_safeAreaBottom];
 
     CGFloat x = self.bounds.size.width - rightMargin - toolWidth;
 
@@ -369,7 +369,37 @@ static NSString * const colorStrPrefix2 = @"#";
 
     moreBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
 }
-
+- (CGFloat)gk_safeAreaBottom {
+    if (@available(iOS 11.0, *)) {
+        CGFloat safeBottom = self.safeAreaInsets.bottom;
+        
+        UIWindow *window = nil;
+        
+        if (@available(iOS 13.0, *)) {
+            for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+                if ([scene isKindOfClass:[UIWindowScene class]]) {
+                    UIWindowScene *windowScene = (UIWindowScene *)scene;
+                    
+                    for (UIWindow *tmpWindow in windowScene.windows) {
+                        if (tmpWindow.isKeyWindow) {
+                            window = tmpWindow;
+                            break;
+                        }
+                    }
+                }
+                
+                if (window) break;
+            }
+        } else {
+            window = UIApplication.sharedApplication.keyWindow;
+        }
+        
+        safeBottom = MAX(safeBottom, window.safeAreaInsets.bottom);
+        
+        return safeBottom;
+    }
+    return 0;
+}
 - (void)showToolView {
     if (!self.configure.isShowTool) {
         return;
