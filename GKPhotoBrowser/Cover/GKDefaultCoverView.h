@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 保存按钮，默认隐藏
 @property (nonatomic, strong) UIButton *saveBtn;
 
+/// 原图/译图 view，默认隐藏 - hidesTranslateView
+@property (nonatomic, strong) UIView *translateView;
+
 @end
 
 NS_ASSUME_NONNULL_END

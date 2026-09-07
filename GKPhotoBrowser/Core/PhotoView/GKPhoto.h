@@ -51,7 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - LivePhoto
 /// 是否是livePhoto，网络livePhoto需从外部传入
 @property (nonatomic, assign) BOOL              isLivePhoto;
-
+#pragma mark - PhotoTranslateOriginal
+/// 是否是翻译后的图片
+@property (nonatomic, assign) BOOL              isPhotoTranslateOriginal;
+@property (nonatomic, assign) BOOL              isPhotoTranslateTranslated;
 /************************内部使用，无需关心 ********************/
 /// 图片是否加载完成
 @property (nonatomic, assign) BOOL               finished;

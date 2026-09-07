@@ -749,6 +749,36 @@
     }
 }
 
+- (void)photoViewDidTapRecognize:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapRecognize:)]) {
+        [self.delegate photoViewDidTapRecognize:self];
+    }
+}
+
+- (void)photoViewDidTapTranslate:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapTranslate:)]) {
+        [self.delegate photoViewDidTapTranslate:self];
+    }
+}
+
+- (void)photoViewDidTapFuzhi:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapFuzhi:)]) {
+        [self.delegate photoViewDidTapFuzhi:self];
+    }
+}
+
+- (void)photoViewDidTapFeedback:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapFeedback:)]) {
+        [self.delegate photoViewDidTapFeedback:self];
+    }
+}
+
+- (void)photoViewDidTapChange:(GKPhotoView *)photoView {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapChange:)]) {
+        [self.delegate photoViewDidTapChange:self];
+    }
+}
+
 #pragma mark - GKPhotoGestureDelegate
 - (void)browserWillDisappear {
     [self.curPhotoView willDismissDisappear];

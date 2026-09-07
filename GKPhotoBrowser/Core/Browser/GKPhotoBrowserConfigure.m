@@ -60,7 +60,8 @@
     self.scaleDismissProgressThreshold = 0.2;
     self.slideDismissDistanceThreshold = 200;
     self.slideDismissVelocityThreshold = 500;
-    
+    self.hidesTranslateView      = YES;
+
     CGSize size = [UIScreen mainScreen].bounds.size;
     self.liveTargetSize = CGSizeMake(2 * size.width, 2 * size.height);
     

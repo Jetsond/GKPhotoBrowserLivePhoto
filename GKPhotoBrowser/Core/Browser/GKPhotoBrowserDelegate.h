@@ -93,4 +93,10 @@
 - (void)photoViewDidTapShare:(GKPhotoBrowser *)browser;
 - (void)photoViewDidTapDownload:(GKPhotoBrowser *)browser;
 - (void)photoViewDidTapMore:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapRecognize:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapTranslate:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapFuzhi:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapFeedback:(GKPhotoBrowser *)browser;
+- (void)photoViewDidTapChange:(GKPhotoBrowser *)browser;
+
 @end

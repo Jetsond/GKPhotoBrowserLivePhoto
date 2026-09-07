@@ -42,6 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)photoViewDidTapMore:(GKPhotoView *)photoView;
 
+- (void)photoViewDidTapRecognize:(GKPhotoView *)photoView;
+
+- (void)photoViewDidTapTranslate:(GKPhotoView *)photoView;
+
+- (void)photoViewDidTapFuzhi:(GKPhotoView *)photoView;
+
+- (void)photoViewDidTapFeedback:(GKPhotoView *)photoView;
+
+- (void)photoViewDidTapChange:(GKPhotoView *)photoView;
+
 @end
 
 @class GKPhotoBrowser;

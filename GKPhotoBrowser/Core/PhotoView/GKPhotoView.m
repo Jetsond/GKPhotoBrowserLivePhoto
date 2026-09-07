@@ -345,11 +345,21 @@ static NSString * const colorStrPrefix2 = @"#";
     CGFloat btnSize = 26.f;
     CGFloat spacing = 12.f;
 
-    UIButton *shareBtn = self.toolview.subviews[0];
-    UIButton *downloadBtn = self.toolview.subviews[1];
-    UIButton *moreBtn = self.toolview.subviews[2];
+    UIButton *fuzhiBtn = self.toolview.subviews[0];
+    UIButton *shareBtn = self.toolview.subviews[1];
+    UIButton *downloadBtn = self.toolview.subviews[2];
+    UIButton *recognizeBtn = self.toolview.subviews[3];
+    UIButton *translateBtn = self.toolview.subviews[4];
+    UIButton *moreBtn = self.toolview.subviews[5];
+    UIButton *feedbackBtn = self.toolview.subviews[6];
+    UIButton *changeBtn = self.toolview.subviews[7];
 
-    CGFloat toolWidth = btnSize * 3 + spacing * 2;
+    int btnCount = 5;
+    if (self.photo.isVideo || self.photo.isPhotoTranslateOriginal) {
+        btnCount = 3;
+    }
+    
+    CGFloat toolWidth = btnSize * btnCount + spacing * (btnCount - 1);
     CGFloat toolHeight = btnSize;
 
     CGFloat rightMargin = 20.f;
@@ -363,11 +373,50 @@ static NSString * const colorStrPrefix2 = @"#";
 
     self.toolview.frame = CGRectMake(x, y, toolWidth, toolHeight);
 
-    shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+    
+    if (self.photo.isPhotoTranslateTranslated) {
+        recognizeBtn.hidden = YES;
+        translateBtn.hidden = YES;
+        moreBtn.hidden = YES;
+        
+        fuzhiBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+        shareBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
+        downloadBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
+        feedbackBtn.frame = CGRectMake((btnSize + spacing) * 3, 0, btnSize, btnSize);
+        changeBtn.frame = CGRectMake((btnSize + spacing) * 4, 0, btnSize, btnSize);
+        
+    } else if (self.photo.isPhotoTranslateOriginal) {
+        fuzhiBtn.hidden = YES;
+        translateBtn.hidden = YES;
+        moreBtn.hidden = YES;
+        feedbackBtn.hidden = YES;
+        changeBtn.hidden = YES;
+        
+        shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+        downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
+        recognizeBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
 
-    downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
-
-    moreBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
+    } else if (self.photo.isVideo) {
+        fuzhiBtn.hidden = YES;
+        feedbackBtn.hidden = YES;
+        changeBtn.hidden = YES;
+        recognizeBtn.hidden = YES;
+        translateBtn.hidden = YES;
+        
+        shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+        downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
+        moreBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
+    } else {
+        fuzhiBtn.hidden = YES;
+        feedbackBtn.hidden = YES;
+        changeBtn.hidden = YES;
+        
+        shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
+        downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
+        recognizeBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
+        translateBtn.frame = CGRectMake((btnSize + spacing) * 3, 0, btnSize, btnSize);
+        moreBtn.frame = CGRectMake((btnSize + spacing) * 4, 0, btnSize, btnSize);
+    }
 }
 - (CGFloat)gk_safeAreaBottom {
     if (@available(iOS 11.0, *)) {
@@ -467,6 +516,37 @@ static NSString * const colorStrPrefix2 = @"#";
         [self.delegate photoViewDidTapMore:self];
     }
 }
+
+- (void)recognizeAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapRecognize:)]) {
+        [self.delegate photoViewDidTapRecognize:self];
+    }
+}
+
+- (void)translateAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapTranslate:)]) {
+        [self.delegate photoViewDidTapTranslate:self];
+    }
+}
+
+- (void)fuzhiAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapFuzhi:)]) {
+        [self.delegate photoViewDidTapFuzhi:self];
+    }
+}
+
+- (void)feedbackAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapFeedback:)]) {
+        [self.delegate photoViewDidTapFeedback:self];
+    }
+}
+
+- (void)changeAction {
+    if ([self.delegate respondsToSelector:@selector(photoViewDidTapChange:)]) {
+        [self.delegate photoViewDidTapChange:self];
+    }
+}
+
 #pragma mark - 懒加载
 - (GKScrollView *)scrollView {
     if (!_scrollView) {
@@ -563,13 +643,23 @@ static NSString * const colorStrPrefix2 = @"#";
         _toolview = [[UIView alloc] init];
         _toolview.backgroundColor = UIColor.clearColor;
         _toolview.hidden = YES;
+        UIButton *fuzhiBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_fuzhi") action:@selector(fuzhiAction)];
         UIButton *shareBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_share") action:@selector(shareAction)];
         UIButton *downloadBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_downld") action:@selector(downloadAction)];
         UIButton *moreBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_more") action:@selector(moreAction)];
+        UIButton *recognizeBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_recognize_vip") action:@selector(recognizeAction)];
+        UIButton *translateBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_translate_vip") action:@selector(translateAction)];
+        UIButton *feedBackBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_feedback") action:@selector(feedbackAction)];
+        UIButton *changeBtn = [self createImageBtn:GKPhotoBrowserImage(@"gk_photo_change") action:@selector(changeAction)];
 
+        [_toolview addSubview:fuzhiBtn];
         [_toolview addSubview:shareBtn];
         [_toolview addSubview:downloadBtn];
+        [_toolview addSubview:recognizeBtn];
+        [_toolview addSubview:translateBtn];
         [_toolview addSubview:moreBtn];
+        [_toolview addSubview:feedBackBtn];
+        [_toolview addSubview:changeBtn];
 
         _toolview.tag = 999; // 方便后面找
     }
