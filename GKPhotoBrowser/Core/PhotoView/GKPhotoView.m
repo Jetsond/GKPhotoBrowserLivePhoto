@@ -325,7 +325,7 @@ static NSString * const colorStrPrefix2 = @"#";
 #pragma mark - tool
 - (UIButton *)createImageBtn:(UIImage *)img action:(SEL)sel {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-    btn.frame = CGRectMake(0, 0, 26, 26);
+    btn.frame = CGRectMake(0, 0, 27, 27);
     [btn setImage:img forState:UIControlStateNormal];
     [btn addTarget:self action:sel forControlEvents:UIControlEventTouchUpInside];
     return btn;
@@ -342,7 +342,7 @@ static NSString * const colorStrPrefix2 = @"#";
         return;
     }
     self.lastToolViewLandscape = isLandscape;
-    CGFloat btnSize = 26.f;
+    CGFloat btnSize = 27.f;
     CGFloat spacing = 12.f;
 
     UIButton *fuzhiBtn = self.toolview.subviews[0];
@@ -355,7 +355,7 @@ static NSString * const colorStrPrefix2 = @"#";
     UIButton *changeBtn = self.toolview.subviews[7];
 
     int btnCount = 5;
-    if (self.photo.isVideo || self.photo.isPhotoTranslateOriginal) {
+    if (self.photo.isVideo || self.photo.isPhotoTranslateOriginal || self.photo.isFromCollectPhoto) {
         btnCount = 3;
     }
     
@@ -396,7 +396,7 @@ static NSString * const colorStrPrefix2 = @"#";
         downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
         recognizeBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
 
-    } else if (self.photo.isVideo) {
+    } else if (self.photo.isVideo || self.photo.isFromCollectPhoto) {
         fuzhiBtn.hidden = YES;
         feedbackBtn.hidden = YES;
         changeBtn.hidden = YES;

@@ -107,7 +107,7 @@
         CGSize textSize = [tipText sizeWithAttributes:@{NSFontAttributeName:self.tipBtn.titleLabel.font}];
         CGFloat btnW = textSize.width + 16;
         CGFloat btnH = 28;
-        self.tipBtn.frame = CGRectMake(0, (KIsiPhoneX && !self.browser.isLandscape) ? (kSafeTopSpace + 90) : 110, btnW, btnH);
+        self.tipBtn.frame = CGRectMake(10, (KIsiPhoneX && !self.browser.isLandscape) ? (kSafeTopSpace + 80) : 100, btnW, btnH);
     }
 }
 

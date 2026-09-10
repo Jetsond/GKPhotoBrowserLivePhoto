@@ -331,6 +331,14 @@
     NSMutableArray *photos = [NSMutableArray arrayWithArray:self.photos];
     [photos replaceObjectAtIndex:index withObject:photo];
     self.photos = photos;
+    if (index == self.currentIndex) {
+        GKPhotoView *photoView = [self photoViewForIndex:index];
+        if (photoView) {
+            [photoView setupPhoto:photo];
+        }
+        [self updateViewIndex];
+        [self updateCoverViews];
+    }
     [self updateReusableViews];
     [self setupPhotoViews];
     [self updateViewIndex];
