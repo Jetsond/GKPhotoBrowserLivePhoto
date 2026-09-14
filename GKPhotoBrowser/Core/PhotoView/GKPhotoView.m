@@ -751,7 +751,6 @@ static NSString * const colorStrPrefix2 = @"#";
         [tipBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [tipBtn setBackgroundColor:[UIColor colorWithRed:61/255.0 green:62/255.0 blue:61/255.0 alpha:1]];
         tipBtn.titleLabel.font = [UIFont systemFontOfSize:12.0f weight:UIFontWeightMedium];
-        [tipBtn addTarget:self action:@selector(translateBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         tipBtn.layer.cornerRadius = 5;
         tipBtn.layer.masksToBounds = YES;
         tipBtn.hidden = YES;
