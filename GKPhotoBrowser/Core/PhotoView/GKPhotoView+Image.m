@@ -26,8 +26,10 @@
     // 3. 控制显示 / 隐藏
     if (ready) {
         [self showToolView];
+        [self showTipBtn];
     } else {
         [self hideToolView];
+        [self hideTipBtn];
     }
 }
 
@@ -377,6 +379,7 @@
     [self adjustFrame];
     [self updateToolViewState];
     [self layoutToolView];
+    [self layoutTipBtn];
 }
 
 - (void)loadProgress:(float)progress isOriginImage:(BOOL)isOriginImage {

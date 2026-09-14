@@ -60,6 +60,8 @@ static NSString * const colorStrPrefix2 = @"#";
 
 @property (nonatomic, strong) UIView *toolview;
 
+@property (nonatomic, strong) UIButton *tipBtn; // 译图提示文字
+
 @end
 
 @implementation GKPhotoView
@@ -75,6 +77,9 @@ static NSString * const colorStrPrefix2 = @"#";
         [self.scrollView addSubview:self.imageView];
         if (configure.isShowTool) {
             [self addSubview:self.toolview];
+        }
+        if (!configure.hidesTranslateView) {
+            [self addSubview:self.tipBtn];
         }
     }
     return self;
@@ -110,6 +115,8 @@ static NSString * const colorStrPrefix2 = @"#";
     self.photo = nil;
     [self.toolview removeFromSuperview];
     self.toolview = nil;
+    [self.tipBtn removeFromSuperview];
+    self.tipBtn = nil;
 }
 
 - (void)resetImageView {
@@ -120,7 +127,6 @@ static NSString * const colorStrPrefix2 = @"#";
 
 - (void)setupPhoto:(GKPhoto *)photo {
     _photo = photo;
-    
     [self loadImageWithPhoto:photo isOrigin:NO];
 }
 
@@ -195,6 +201,7 @@ static NSString * const colorStrPrefix2 = @"#";
         [self videoDidDismissAppear];
     }else{
         [self showToolView];
+        [self showTipBtn];
     }
 }
 
@@ -205,6 +212,7 @@ static NSString * const colorStrPrefix2 = @"#";
         [self videoWillDismissDisappear];
     }else{
         [self hideToolView];
+        [self hideTipBtn];
     }
 }
 
@@ -225,6 +233,7 @@ static NSString * const colorStrPrefix2 = @"#";
         //防止初始化无效调用
         if (self.photo) {
             [self layoutToolView];
+            [self layoutTipBtn];
         }
     }
 }
@@ -395,7 +404,7 @@ static NSString * const colorStrPrefix2 = @"#";
         shareBtn.frame = CGRectMake(0, 0, btnSize, btnSize);
         downloadBtn.frame = CGRectMake(btnSize + spacing, 0, btnSize, btnSize);
         recognizeBtn.frame = CGRectMake((btnSize + spacing) * 2, 0, btnSize, btnSize);
-
+        
     } else if (self.photo.isVideo || self.photo.isFromCollectPhoto) {
         fuzhiBtn.hidden = YES;
         feedbackBtn.hidden = YES;
@@ -467,23 +476,23 @@ static NSString * const colorStrPrefix2 = @"#";
     if (!_toolview.isHidden) {
         return;
     }
-
+    
     [self setNeedsLayout];
     [self layoutIfNeeded];
     [self layoutToolView];
-
+    
     self.toolview.hidden = NO;
-
+    
     self.toolview.alpha = 0;
-
+    
     self.toolview.transform = CGAffineTransformMakeTranslation(0, 10);
-
+    
     [UIView animateWithDuration:0.25 animations:^{
-
+        
         self.toolview.alpha = 1;
-
+        
         self.toolview.transform = CGAffineTransformIdentity;
-
+        
     }];
 }
 
@@ -499,6 +508,74 @@ static NSString * const colorStrPrefix2 = @"#";
         self.toolview.hidden = YES;
     }];
 }
+
+- (void)showTipBtn {
+    if (self.configure.hidesTranslateView) {
+        return;
+    }
+    if (!self.photo.isPhotoTranslateTranslated) {
+        return;
+    }
+    if (self.photo.isLivePhoto &&!self.livePhoto.livePhotoView.livePhoto) {
+        return;
+    }
+    
+    if (self.tipBtn.superview == nil) {
+        [self addSubview:self.tipBtn];
+    }
+    // 防止闪烁调用多次
+    if (!_tipBtn.isHidden) {
+        return;
+    }
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    [self layoutTipBtn];
+    
+    self.tipBtn.hidden = NO;
+    
+    self.tipBtn.alpha = 0;
+    
+    self.tipBtn.transform = CGAffineTransformMakeTranslation(0, 10);
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        
+        self.tipBtn.alpha = 1;
+        
+        self.tipBtn.transform = CGAffineTransformIdentity;
+        
+    }];
+}
+
+- (void)hideTipBtn {
+    // 防止闪烁调用多次
+    if (_tipBtn.isHidden) {
+        return;
+    }
+    [UIView animateWithDuration:0.2 animations:^{
+        self.tipBtn.alpha = 0;
+        self.tipBtn.transform = CGAffineTransformMakeTranslation(0, 10);
+    } completion:^(BOOL finished) {
+        self.tipBtn.hidden = YES;
+    }];
+}
+
+-(void)layoutTipBtn {
+    if (self.configure.hidesTranslateView) {
+        return;
+    }
+    
+    if (!self.photo.isPhotoTranslateTranslated) {
+        return;
+    }
+    NSString *tipText = [NSString stringWithFormat:@"文A 已翻译 · %@", self.photo.extraInfo];
+    [self.tipBtn setTitle:tipText forState:UIControlStateNormal];
+
+    CGSize textSize = [tipText sizeWithAttributes:@{NSFontAttributeName:self.tipBtn.titleLabel.font}];
+    CGFloat btnW = textSize.width + 16;
+    CGFloat btnH = 28;
+    self.tipBtn.frame = CGRectMake(16, 130, btnW, btnH);
+}
+
 - (void)shareAction {
     if ([self.delegate respondsToSelector:@selector(photoViewDidTapShare:)]) {
         [self.delegate photoViewDidTapShare:self];
@@ -664,6 +741,23 @@ static NSString * const colorStrPrefix2 = @"#";
         _toolview.tag = 999; // 方便后面找
     }
     return _toolview;
+}
+
+- (UIButton *)tipBtn {
+    if (!_tipBtn) {
+        UIButton *tipBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        tipBtn.bounds = CGRectMake(0, 0, 123, 23);
+        [tipBtn setTitle:@"文A 已翻译 · English" forState:UIControlStateNormal];
+        [tipBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [tipBtn setBackgroundColor:[UIColor colorWithRed:61/255.0 green:62/255.0 blue:61/255.0 alpha:1]];
+        tipBtn.titleLabel.font = [UIFont systemFontOfSize:12.0f weight:UIFontWeightMedium];
+        [tipBtn addTarget:self action:@selector(translateBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        tipBtn.layer.cornerRadius = 5;
+        tipBtn.layer.masksToBounds = YES;
+        tipBtn.hidden = YES;
+        _tipBtn = tipBtn;
+    }
+    return _tipBtn;
 }
 
 -(UIColor *)yh_colorWithHexString:(NSString *)hexColor{

@@ -12,8 +12,6 @@
 @property (nonatomic, strong) UIButton *originalBtn; // 原图
 @property (nonatomic, strong) UIButton *translateBtn; // 译图
 
-@property (nonatomic, strong) UIButton *tipBtn; // 译图提示文字
-
 @end
 @implementation GKDefaultCoverView
 
@@ -25,7 +23,6 @@
     [view addSubview:self.pageControl];
     [view addSubview:self.saveBtn];
     [view addSubview:self.translateView];
-    [view addSubview:self.tipBtn];
 
     self.pageControl.numberOfPages = self.browser.photos.count;
     CGSize size = [self.pageControl sizeForNumberOfPages:self.browser.photos.count];
@@ -65,13 +62,11 @@
     self.pageControl.currentPage = index;
     if (!self.browser.configure.hidesTranslateView && index < self.browser.photos.count) {
         if (index == 0) {
-            self.tipBtn.hidden = YES;
             [self.originalBtn setTitleColor:[UIColor colorWithRed:8/255.0 green:20/255.0 blue:42/255.0 alpha:1] forState:UIControlStateNormal];
             [self.originalBtn setBackgroundColor:[UIColor whiteColor]];
             [self.translateBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [self.translateBtn setBackgroundColor:[UIColor clearColor]];
         } else {
-            self.tipBtn.hidden = NO;
             [self.originalBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [self.originalBtn setBackgroundColor:[UIColor clearColor]];
             [self.translateBtn setTitleColor:[UIColor colorWithRed:8/255.0 green:20/255.0 blue:42/255.0 alpha:1] forState:UIControlStateNormal];
@@ -101,13 +96,6 @@
         }
         self.saveBtn.hidden = self.browser.configure.hidesSavedBtn;
         self.translateView.hidden = self.browser.configure.hidesTranslateView;
-        NSString *tipText = [NSString stringWithFormat:@"文A 已翻译 · %@", photo.extraInfo];
-        [self.tipBtn setTitle:tipText forState:UIControlStateNormal];
-
-        CGSize textSize = [tipText sizeWithAttributes:@{NSFontAttributeName:self.tipBtn.titleLabel.font}];
-        CGFloat btnW = textSize.width + 16;
-        CGFloat btnH = 28;
-        self.tipBtn.frame = CGRectMake(10, (KIsiPhoneX && !self.browser.isLandscape) ? (kSafeTopSpace + 80) : 100, btnW, btnH);
     }
 }
 
@@ -219,23 +207,6 @@
         _translateBtn = translateBtn;
     }
     return _translateBtn;
-}
-
-- (UIButton *)tipBtn {
-    if (!_tipBtn) {
-        UIButton *tipBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        tipBtn.bounds = CGRectMake(0, 0, 123, 23);
-        [tipBtn setTitle:@"文A 已翻译 · English" forState:UIControlStateNormal];
-        [tipBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [tipBtn setBackgroundColor:[UIColor colorWithRed:61/255.0 green:62/255.0 blue:61/255.0 alpha:1]];
-        tipBtn.titleLabel.font = [UIFont systemFontOfSize:12.0f weight:UIFontWeightMedium];
-        [tipBtn addTarget:self action:@selector(translateBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        tipBtn.layer.cornerRadius = 5;
-        tipBtn.layer.masksToBounds = YES;
-        tipBtn.hidden = YES;
-        _tipBtn = tipBtn;
-    }
-    return _tipBtn;
 }
 
 @end

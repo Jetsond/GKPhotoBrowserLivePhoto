@@ -131,6 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didScrollAppear;
 - (void)willScrollDisappear;
 - (void)didScrollDisappear;
+/// 译图
+- (void)showTipBtn;
+- (void)hideTipBtn;
+- (void)layoutTipBtn;
 
 // 隐藏滑动
 - (void)didDismissAppear;
