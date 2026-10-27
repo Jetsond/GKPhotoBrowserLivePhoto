@@ -426,6 +426,35 @@ static NSString * const colorStrPrefix2 = @"#";
         translateBtn.frame = CGRectMake((btnSize + spacing) * 3, 0, btnSize, btnSize);
         moreBtn.frame = CGRectMake((btnSize + spacing) * 4, 0, btnSize, btnSize);
     }
+    // 布局后按隐私开关刷新转发/下载禁用态（更多保持可点）
+    [self hy_applyPrivacyRestrictedToToolButtons];
+}
+/// 高级隐私：转发/下载用 *_no + enabled=NO；更多不禁
+- (void)hy_applyPrivacyRestrictedToToolButtons {
+    if (!self.configure.isShowTool || self.toolview.subviews.count < 6) {
+        return;
+    }
+    BOOL off = self.configure.privacyRestrictedActionsDisabled;
+    UIButton *shareBtn = self.toolview.subviews[1];
+    UIButton *downloadBtn = self.toolview.subviews[2];
+    UIButton *moreBtn = self.toolview.subviews[5];
+
+    UIImage *shareNormal = GKPhotoBrowserImage(@"gk_photo_share");
+    UIImage *shareNo = GKPhotoBrowserImage(@"gk_photo_share_no");
+    UIImage *downNormal = GKPhotoBrowserImage(@"gk_photo_downld");
+    UIImage *downNo = GKPhotoBrowserImage(@"gk_photo_downld_no");
+
+    [shareBtn setImage:(off && shareNo) ? shareNo : shareNormal forState:UIControlStateNormal];
+    [downloadBtn setImage:(off && downNo) ? downNo : downNormal forState:UIControlStateNormal];
+    // 无 *_no 资源时用透明度兜底，有资源则保持 1.0
+    shareBtn.alpha = (off && !shareNo) ? 0.4 : 1.0;
+    downloadBtn.alpha = (off && !downNo) ? 0.4 : 1.0;
+    shareBtn.enabled = !off;
+    downloadBtn.enabled = !off;
+    // 更多始终可点，弹窗内再禁转发/保存/收藏
+    [moreBtn setImage:GKPhotoBrowserImage(@"gk_photo_more") forState:UIControlStateNormal];
+    moreBtn.enabled = YES;
+    moreBtn.alpha = 1.0;
 }
 - (CGFloat)gk_safeAreaBottom {
     if (@available(iOS 11.0, *)) {
@@ -577,18 +606,27 @@ static NSString * const colorStrPrefix2 = @"#";
 }
 
 - (void)shareAction {
+    // 高级隐私限制下底栏转发不可点
+    if (self.configure.privacyRestrictedActionsDisabled) {
+        return;
+    }
     if ([self.delegate respondsToSelector:@selector(photoViewDidTapShare:)]) {
         [self.delegate photoViewDidTapShare:self];
     }
 }
 
 - (void)downloadAction {
+    // 高级隐私限制下底栏下载不可点
+    if (self.configure.privacyRestrictedActionsDisabled) {
+        return;
+    }
     if ([self.delegate respondsToSelector:@selector(photoViewDidTapDownload:)]) {
         [self.delegate photoViewDidTapDownload:self];
     }
 }
 
 - (void)moreAction {
+    // 更多保持可点，限制在弹窗选项里做
     if ([self.delegate respondsToSelector:@selector(photoViewDidTapMore:)]) {
         [self.delegate photoViewDidTapMore:self];
     }

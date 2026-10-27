@@ -202,6 +202,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否展示工具view(分享 下载 更多)
 @property (nonatomic, assign) BOOL isShowTool;
 
+/// 高级聊天隐私限制：YES 时底栏转发/下载换 *_no 图且不可点；更多仍可点，限制在弹窗内做
+@property (nonatomic, assign) BOOL privacyRestrictedActionsDisabled;
+
 /// 是否隐藏translateView，默认YES
 @property (nonatomic, assign) BOOL hidesTranslateView;
 

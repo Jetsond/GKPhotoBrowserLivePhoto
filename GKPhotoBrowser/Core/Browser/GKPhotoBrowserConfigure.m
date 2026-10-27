@@ -61,6 +61,8 @@
     self.slideDismissDistanceThreshold = 200;
     self.slideDismissVelocityThreshold = 500;
     self.hidesTranslateView      = YES;
+    // 默认不限制；由业务在打开预览时写入 privacyRestrictedActionsDisabled
+    self.privacyRestrictedActionsDisabled = NO;
 
     CGSize size = [UIScreen mainScreen].bounds.size;
     self.liveTargetSize = CGSizeMake(2 * size.width, 2 * size.height);
