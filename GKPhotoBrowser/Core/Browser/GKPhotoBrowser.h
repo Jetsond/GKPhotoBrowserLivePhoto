@@ -90,6 +90,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 旋转/布局时同步防截宿主 frame（无盾则空操作）
 - (void)layoutScreenShieldHostIfNeeded;
 
+/// 运行时开/关防截：把 contentView 迁入/迁出 secure 宿主（信令动态改盾用）
+- (void)updateScreenShieldEnabled:(BOOL)enabled;
+
+/// 运行时刷新底栏转发/下载禁用态
+- (void)updatePrivacyRestrictedActionsDisabled:(BOOL)disabled;
+
 // 浏览器第一次显示
 - (void)browserFirstAppear;
 

@@ -1016,6 +1016,54 @@
     self.screenShieldHostView.frame = self.view.bounds;
 }
 
+/// 信令/业务运行时切换防截：整棵 contentView 迁入或迁出 secure 层，不重建 browser
+- (void)updateScreenShieldEnabled:(BOOL)enabled {
+    self.configure.screenShieldEnabled = enabled;
+    if (enabled) {
+        if (self.screenShieldHostView) {
+            return;
+        }
+        UIView *secureHost = [self gk_makeScreenShieldHostView];
+        if (!secureHost) {
+            NSLog(@"[GKPhotoBrowser] updateScreenShieldEnabled=YES 但 secure 创建失败");
+            return;
+        }
+        secureHost.frame = self.view.bounds;
+        secureHost.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        self.screenShieldHostView = secureHost;
+        [self.view insertSubview:secureHost atIndex:0];
+        [self.contentView removeFromSuperview];
+        [secureHost addSubview:self.contentView];
+        self.contentView.frame = secureHost.bounds;
+        [self layoutSubviews];
+        NSLog(@"[GKPhotoBrowser] 运行时开启防截盾");
+    } else {
+        if (!self.screenShieldHostView) {
+            return;
+        }
+        [self.contentView removeFromSuperview];
+        [self.view insertSubview:self.contentView atIndex:0];
+        [self.screenShieldHostView removeFromSuperview];
+        self.screenShieldHostView = nil;
+        self.contentView.frame = self.view.bounds;
+        [self layoutSubviews];
+        NSLog(@"[GKPhotoBrowser] 运行时关闭防截盾");
+    }
+}
+
+- (void)updatePrivacyRestrictedActionsDisabled:(BOOL)disabled {
+    self.configure.privacyRestrictedActionsDisabled = disabled;
+    // 刷新当前可见页底栏灰显
+    [self.visiblePhotoViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if ([obj respondsToSelector:@selector(hy_applyPrivacyRestrictedToToolButtons)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [obj performSelector:@selector(hy_applyPrivacyRestrictedToToolButtons)];
+#pragma clang diagnostic pop
+        }
+    }];
+}
+
 // 更新布局
 - (void)layoutSubviews {
     CGFloat padding = self.configure.photoViewPadding;
