@@ -231,7 +231,8 @@
             
             CGFloat width = MIN(screenBounds.size.width, screenBounds.size.height);
             CGFloat height = MAX(screenBounds.size.width, screenBounds.size.height);
-            // 设置frame
+            // 设置frame（防截宿主先铺满）
+            [self.browser layoutScreenShieldHostIfNeeded];
             self.browser.contentView.bounds = CGRectMake(0, 0, width, height);
             self.browser.contentView.center = self.browser.view.center;
             

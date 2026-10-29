@@ -87,6 +87,9 @@ NS_ASSUME_NONNULL_BEGIN
 // 更新布局
 - (void)layoutSubviews;
 
+/// 旋转/布局时同步防截宿主 frame（无盾则空操作）
+- (void)layoutScreenShieldHostIfNeeded;
+
 // 浏览器第一次显示
 - (void)browserFirstAppear;
 

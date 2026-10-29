@@ -205,6 +205,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 高级聊天隐私限制：YES 时底栏转发/下载换 *_no 图且不可点；更多仍可点，限制在弹窗内做
 @property (nonatomic, assign) BOOL privacyRestrictedActionsDisabled;
 
+/// 预览防截屏/防录屏：YES 时将 contentView 包进 secureTextEntry 安全层（截屏/录屏该区域发黑）；默认 NO，由业务在打开预览前写入
+@property (nonatomic, assign) BOOL screenShieldEnabled;
+
 /// 是否隐藏translateView，默认YES
 @property (nonatomic, assign) BOOL hidesTranslateView;
 

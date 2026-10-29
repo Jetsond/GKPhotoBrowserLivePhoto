@@ -212,6 +212,8 @@
 }
 
 - (void)updateBrowserWithFrame:(CGRect)frame {
+    // 防截宿主随浏览器 view 铺满，contentView 仍相对宿主居中旋转
+    [self.browser layoutScreenShieldHostIfNeeded];
     self.browser.contentView.bounds = frame;
     self.browser.contentView.center = self.browser.view.center;
     [self.browser.view setNeedsLayout];

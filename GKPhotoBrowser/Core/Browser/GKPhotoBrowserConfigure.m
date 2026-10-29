@@ -63,6 +63,8 @@
     self.hidesTranslateView      = YES;
     // 默认不限制；由业务在打开预览时写入 privacyRestrictedActionsDisabled
     self.privacyRestrictedActionsDisabled = NO;
+    // 默认不防截；高级隐私 / 阅后即焚预览由业务打开时写入 screenShieldEnabled
+    self.screenShieldEnabled = NO;
 
     CGSize size = [UIScreen mainScreen].bounds.size;
     self.liveTargetSize = CGSizeMake(2 * size.width, 2 * size.height);

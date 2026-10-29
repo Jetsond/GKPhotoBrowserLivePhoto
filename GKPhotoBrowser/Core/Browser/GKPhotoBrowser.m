@@ -18,6 +18,9 @@
 
 @property (nonatomic, strong) UIView         *contentView;
 
+/// 防截屏宿主：screenShieldEnabled 时作为 contentView 的父视图（secure 层）
+@property (nonatomic, strong) UIView         *screenShieldHostView;
+
 @property (nonatomic, strong) UIScrollView   *photoScrollView;
 
 @property (nonatomic, weak) UIView           *progressView;
@@ -149,7 +152,8 @@
     [super viewWillLayoutSubviews];
     
     if ([UIDevice isMac]) {
-        self.contentView.frame = self.view.bounds;
+        [self layoutScreenShieldHostIfNeeded];
+        self.contentView.frame = self.screenShieldHostView ? self.screenShieldHostView.bounds : self.view.bounds;
         [self layoutSubviews];
     }
 }
@@ -163,7 +167,23 @@
     self.contentView = [[UIView alloc] initWithFrame:self.view.bounds];
     self.contentView.center = self.view.center;
     self.contentView.backgroundColor = [UIColor clearColor];
-    [self.view addSubview:self.contentView];
+    // 1. 防截/防录：modal 预览不在业务页 shieldView 内，需在浏览器内包 secure 层
+    // 2. 开启时 contentView（含 photoScrollView / cover / 进度）整体进安全容器，截屏录屏发黑
+    if (self.configure.screenShieldEnabled) {
+        UIView *secureHost = [self gk_makeScreenShieldHostView];
+        if (secureHost) {
+            secureHost.frame = self.view.bounds;
+            secureHost.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            self.screenShieldHostView = secureHost;
+            [self.view addSubview:secureHost];
+            [secureHost addSubview:self.contentView];
+        } else {
+            // 系统不支持 / 创建失败时降级为普通预览，避免空白
+            [self.view addSubview:self.contentView];
+        }
+    } else {
+        [self.view addSubview:self.contentView];
+    }
     [self.contentView addSubview:self.photoScrollView];
     
     [self setupCoverViews];
@@ -183,6 +203,36 @@
     if (self.photoScrollView.contentOffset.x == 0) {
         [self scrollViewDidScroll:self.photoScrollView];
     }
+}
+
+
+/// 取出 UITextField.secureTextEntry 系统安全子 view，作为截屏/录屏发黑容器（与业务 HYScreenShieldView 同思路，库内自包含不依赖 App）
+- (UIView *)gk_makeScreenShieldHostView {
+    NSString *version = [UIDevice currentDevice].systemVersion;
+    // 与业务侧一致：部分系统版本 secure 层不稳定，直接放弃防截
+    if ([version containsString:@"15.1"]) {
+        return nil;
+    }
+    UITextField *field = [[UITextField alloc] init];
+    field.secureTextEntry = YES;
+    if (field.subviews.count == 0) {
+        return nil;
+    }
+    UIView *secureView = field.subviews.firstObject;
+    if (!secureView) {
+        return nil;
+    }
+    // 清掉系统默认子视图，只当空容器用
+    if (secureView.subviews.count > 0) {
+        for (UIView *sub in [secureView.subviews copy]) {
+            [sub removeFromSuperview];
+        }
+    }
+    secureView.userInteractionEnabled = YES;
+    secureView.backgroundColor = [UIColor clearColor];
+    // 旋转时 contentView 会 transform，宿主不要裁切
+    secureView.clipsToBounds = NO;
+    return secureView;
 }
 
 - (void)addGestureAndObserver {
@@ -957,6 +1007,14 @@
 @end
 
 @implementation GKPhotoBrowser (Private)
+
+/// 同步防截宿主尺寸（旋转 / Mac 布局）
+- (void)layoutScreenShieldHostIfNeeded {
+    if (!self.screenShieldHostView) {
+        return;
+    }
+    self.screenShieldHostView.frame = self.view.bounds;
+}
 
 // 更新布局
 - (void)layoutSubviews {
